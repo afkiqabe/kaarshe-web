@@ -1,0 +1,174 @@
+import { Section } from '@/components/layout/Section'
+import { Button } from '@/components/ui/Button'
+import { Icon } from '@/components/ui/Icon'
+import Image from 'next/image'
+import Link from 'next/link'
+import { visionPageContent } from '@/lib/constants'
+
+export default function VisionPage() {
+  const { hero, pillars, quote, strategies } = visionPageContent
+
+  return (
+    <>
+      {/* Hero Section */}
+      <section className="relative bg-white overflow-hidden border-b border-gray-100">
+        <div 
+          className="absolute inset-0 opacity-5 pointer-events-none" 
+          style={{ 
+            backgroundImage: 'radial-gradient(#1f1f1f 1px, transparent 1px)', 
+            backgroundSize: '20px 20px' 
+          }}
+        />
+        <div className="max-w-7xl mx-auto px-6 py-24 md:py-32 relative text-center">
+          <div className="inline-block bg-accent-burgundy/10 text-accent-burgundy px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase mb-6">
+            {hero.badge}
+          </div>
+          <h1 className="text-4xl md:text-6xl font-black text-primary leading-tight mb-6 tracking-tight max-w-4xl mx-auto">
+            {hero.title}
+            <span className="text-accent-burgundy">{hero.titleHighlight}</span>
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-10">
+            {hero.description}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button href={hero.cta.primary.href} size="lg" className="shadow-lg">
+              {hero.cta.primary.label}
+            </Button>
+            <Button href={hero.cta.secondary.href} variant="outline" size="lg">
+              {hero.cta.secondary.label}
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Policy Pillars Grid */}
+      <Section id="pillars">
+        <div className="mb-12">
+          <h2 className="text-accent-burgundy text-3xl font-bold tracking-tight mb-2">Our Policy Pillars</h2>
+          <div className="w-20 h-1 bg-accent-gold" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {pillars.map((pillar, index) => (
+            <div 
+              key={index}
+              className="bg-white p-8 rounded-lg border border-primary/5 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="text-accent-gold mb-4">
+                <Icon name={pillar.icon} size="xl" />
+              </div>
+              <h3 className="text-accent-burgundy text-xl font-bold mb-4">{pillar.title}</h3>
+              <p className="text-gray-600 text-sm leading-relaxed mb-6">
+                {pillar.description}
+              </p>
+              <ul className="space-y-2 text-sm text-gray-700">
+                {pillar.points.map((point, idx) => (
+                  <li key={idx} className="flex items-center gap-2">
+                    <Icon name="check_circle" className="text-accent-gold" size="xs" />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Quote Block */}
+      <section className="bg-primary py-24 px-6 text-center overflow-hidden relative">
+        <div className="absolute left-0 top-0 w-1 h-full bg-accent-gold" />
+        <div className="max-w-4xl mx-auto relative">
+          <Icon name="format_quote" className="text-accent-gold text-6xl opacity-30 mb-8 block" />
+          <blockquote className="text-3xl md:text-5xl font-light italic text-white leading-tight mb-10">
+            {quote.text}
+          </blockquote>
+          <cite className="not-italic flex flex-col items-center">
+            <span className="text-accent-gold font-bold tracking-widest uppercase text-sm mb-2">
+              {quote.author}
+            </span>
+            <span className="text-gray-400 text-sm font-medium">{quote.title}</span>
+          </cite>
+        </div>
+      </section>
+
+      {/* Detailed Strategy */}
+      <section className="max-w-7xl mx-auto px-6 py-24 flex flex-col lg:flex-row gap-16">
+        {/* Sidebar Nav */}
+        <aside className="lg:w-1/4">
+          <div className="sticky top-32 space-y-4">
+            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Strategy Menu</h4>
+            <Link 
+              href="#economy"
+              className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm border-l-4 border-accent-burgundy text-primary font-bold transition-all"
+            >
+              <Icon name="payments" /> Economy
+            </Link>
+            <Link 
+              href="#"
+              className="flex items-center gap-3 p-3 hover:bg-white rounded-lg text-gray-500 font-medium transition-all group"
+            >
+              <Icon name="health_and_safety" className="group-hover:text-accent-burgundy" /> Healthcare
+            </Link>
+            <Link 
+              href="#"
+              className="flex items-center gap-3 p-3 hover:bg-white rounded-lg text-gray-500 font-medium transition-all group"
+            >
+              <Icon name="bolt" className="group-hover:text-accent-burgundy" /> Infrastructure
+            </Link>
+            <Link 
+              href="#"
+              className="flex items-center gap-3 p-3 hover:bg-white rounded-lg text-gray-500 font-medium transition-all group"
+            >
+              <Icon name="shield" className="group-hover:text-accent-burgundy" /> Governance
+            </Link>
+          </div>
+        </aside>
+
+        {/* Detailed Content */}
+        <div className="lg:w-3/4 space-y-16">
+          <div id="economy">
+            <h2 className="text-accent-burgundy text-3xl font-bold mb-8">
+              Deep-Dive: {strategies[0].title}
+            </h2>
+            <div className="aspect-video w-full rounded-xl mb-8 overflow-hidden bg-neutral-200">
+              <Image
+                src={strategies[0].image}
+                alt={strategies[0].title}
+                width={800}
+                height={450}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed space-y-6">
+              <p>{strategies[0].description}</p>
+              <h4 className="text-primary font-bold text-xl mt-8 mb-4">Key Objectives:</h4>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 list-none pl-5">
+                {strategies[0].objectives.map((objective, index) => (
+                  <li key={index} className="gold-bullet py-1">{objective}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <hr className="border-gray-200" />
+
+          <div id="education">
+            <h2 className="text-accent-burgundy text-3xl font-bold mb-8">{strategies[1].title}</h2>
+            <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed space-y-6">
+              <p>{strategies[1].description}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-10">
+                {strategies[1].phases.map((phase, index) => (
+                  <div key={index} className="p-6 bg-accent-gold/5 rounded-lg border border-accent-gold/20">
+                    <h5 className="text-accent-gold font-bold mb-2 uppercase text-xs tracking-wider">
+                      {phase.title}
+                    </h5>
+                    <p className="text-sm font-medium">{phase.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}

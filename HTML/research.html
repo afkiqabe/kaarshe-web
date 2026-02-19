@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kaarshe Official - Research Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1f1f1f",
+                        "accent-burgundy": "#800020",
+                        "background-light": "#f7f7f7",
+                        "background-dark": "#191919",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+            background-color: #f7f7f7;
+        }
+        .document-row:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-primary">
+<!-- Global Header -->
+<header class="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-neutral-200 px-6 lg:px-20 py-4">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-primary text-white p-1.5 rounded">
+<span class="material-symbols-outlined text-2xl">account_balance</span>
+</div>
+<h2 class="text-primary text-xl font-bold tracking-tight">Kaarshe Official</h2>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-semibold hover:text-accent-burgundy transition-colors" href="#">Home</a>
+<a class="text-sm font-semibold text-accent-burgundy underline underline-offset-4" href="#">Research Library</a>
+<a class="text-sm font-semibold hover:text-accent-burgundy transition-colors" href="#">Insights</a>
+<a class="text-sm font-semibold hover:text-accent-burgundy transition-colors" href="#">About</a>
+<a class="text-sm font-semibold hover:text-accent-burgundy transition-colors" href="#">Contact</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hidden sm:block text-sm font-bold px-4 py-2 rounded-lg border border-primary hover:bg-primary hover:text-white transition-all">Sign In</button>
+<button class="bg-primary text-white text-sm font-bold px-5 py-2 rounded-lg hover:bg-neutral-800 transition-all">Join Archive</button>
+</div>
+</div>
+</header>
+<main class="min-h-screen">
+<!-- Hero Section -->
+<section class="relative bg-white py-16 lg:py-24 border-b border-neutral-100">
+<div class="max-w-7xl mx-auto px-6 lg:px-20">
+<div class="max-w-3xl">
+<span class="inline-block px-3 py-1 bg-primary/5 text-primary text-xs font-bold tracking-widest uppercase mb-4 rounded">Digital Repository</span>
+<h1 class="text-4xl lg:text-6xl font-black text-primary leading-[1.1] tracking-tight mb-6">
+                        The Intellectual Archive: <span class="text-accent-burgundy">Research &amp; Analysis</span>
+</h1>
+<p class="text-lg text-neutral-600 leading-relaxed mb-8">
+                        Access our comprehensive database of peer-reviewed scholarly documents, policy briefs, and granular economic reports curated for global impact.
+                    </p>
+<div class="flex flex-wrap gap-4">
+<div class="flex items-center gap-2 text-sm font-medium text-neutral-500">
+<span class="material-symbols-outlined text-lg">description</span>
+<span>1,240+ Documents</span>
+</div>
+<div class="flex items-center gap-2 text-sm font-medium text-neutral-500">
+<span class="material-symbols-outlined text-lg">update</span>
+<span>Updated Daily</span>
+</div>
+<div class="flex items-center gap-2 text-sm font-medium text-neutral-500">
+<span class="material-symbols-outlined text-lg">verified</span>
+<span>Peer Reviewed</span>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute right-0 top-0 h-full w-1/3 opacity-5 pointer-events-none hidden lg:block" data-alt="Abstract dotted geometric pattern background" style="background-image: radial-gradient(#1f1f1f 1px, transparent 1px); background-size: 24px 24px;">
+</div>
+</section>
+<!-- Search & Filter Controls -->
+<section class="sticky top-[73px] z-40 bg-background-light py-6 border-b border-neutral-200">
+<div class="max-w-7xl mx-auto px-6 lg:px-20">
+<div class="flex flex-col lg:flex-row gap-6 items-center justify-between">
+<!-- Minimal Search Bar -->
+<div class="relative w-full lg:max-w-md">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400">search</span>
+<input class="w-full bg-white border border-neutral-300 rounded-lg py-3 pl-12 pr-4 focus:ring-1 focus:ring-accent-burgundy focus:border-accent-burgundy outline-none transition-all placeholder:text-neutral-400 text-sm" placeholder="Search papers, authors, or keywords..." type="text"/>
+</div>
+<!-- Category Filters -->
+<div class="flex items-center gap-2 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
+<span class="text-xs font-bold text-neutral-400 uppercase tracking-wider mr-2">Filter by:</span>
+<button class="whitespace-nowrap px-4 py-2 bg-primary text-white rounded-full text-sm font-medium transition-all">All Fields</button>
+<button class="whitespace-nowrap px-4 py-2 bg-white border border-neutral-200 text-neutral-600 hover:border-accent-burgundy hover:text-accent-burgundy rounded-full text-sm font-medium transition-all">Economy</button>
+<button class="whitespace-nowrap px-4 py-2 bg-white border border-neutral-200 text-neutral-600 hover:border-accent-burgundy hover:text-accent-burgundy rounded-full text-sm font-medium transition-all">Society</button>
+<button class="whitespace-nowrap px-4 py-2 bg-white border border-neutral-200 text-neutral-600 hover:border-accent-burgundy hover:text-accent-burgundy rounded-full text-sm font-medium transition-all">Governance</button>
+<button class="whitespace-nowrap px-4 py-2 bg-white border border-neutral-200 text-neutral-600 hover:border-accent-burgundy hover:text-accent-burgundy rounded-full text-sm font-medium transition-all">Technology</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Document List -->
+<section class="py-12 px-6 lg:px-20 max-w-7xl mx-auto">
+<div class="flex flex-col gap-1">
+<!-- Document Row 1 -->
+<div class="document-row group flex flex-col md:flex-row items-start md:items-center justify-between p-6 bg-white border-b border-neutral-100 transition-all first:rounded-t-xl">
+<div class="flex-1 pr-8">
+<div class="flex items-center gap-3 mb-2">
+<span class="text-[10px] font-bold uppercase tracking-widest text-accent-burgundy bg-accent-burgundy/10 px-2 py-0.5 rounded">Economy</span>
+<span class="text-xs text-neutral-400 font-medium">Published Oct 24, 2023</span>
+</div>
+<h3 class="text-xl font-bold text-primary group-hover:text-accent-burgundy transition-colors mb-2">Global Trade Resilience in the Post-Pandemic Era: A Structural Analysis</h3>
+<p class="text-neutral-500 text-sm line-clamp-2 max-w-2xl mb-4 md:mb-0">
+                            This report examines the shifts in supply chain architectures across the EMEA region, highlighting the transition from 'just-in-time' to 'just-in-case' inventory models and their long-term economic implications...
+                        </p>
+<div class="flex items-center gap-4 mt-3 text-xs font-semibold text-neutral-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">person</span> Dr. Aras Kaarshe</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">timer</span> 12 min read</span>
+</div>
+</div>
+<div class="mt-6 md:mt-0 flex items-center gap-3 shrink-0">
+<button class="flex items-center justify-center gap-2 bg-accent-burgundy text-white px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-[#600018] transition-all shadow-sm">
+<span class="material-symbols-outlined text-lg">download</span>
+                            Download PDF
+                        </button>
+<button class="p-2.5 text-neutral-400 hover:text-primary border border-transparent hover:border-neutral-200 rounded-lg transition-all">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+</div>
+</div>
+<!-- Document Row 2 -->
+<div class="document-row group flex flex-col md:flex-row items-start md:items-center justify-between p-6 bg-white border-b border-neutral-100 transition-all">
+<div class="flex-1 pr-8">
+<div class="flex items-center gap-3 mb-2">
+<span class="text-[10px] font-bold uppercase tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Governance</span>
+<span class="text-xs text-neutral-400 font-medium">Published Sep 12, 2023</span>
+</div>
+<h3 class="text-xl font-bold text-primary group-hover:text-accent-burgundy transition-colors mb-2">Decentralized Governance: Challenges and Opportunities for Emerging Economies</h3>
+<p class="text-neutral-500 text-sm line-clamp-2 max-w-2xl mb-4 md:mb-0">
+                            An in-depth study of administrative decentralization in East Africa, analyzing fiscal autonomy at the municipal level and the resulting impact on public service delivery...
+                        </p>
+<div class="flex items-center gap-4 mt-3 text-xs font-semibold text-neutral-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">person</span> Prof. L. Henderson</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">timer</span> 18 min read</span>
+</div>
+</div>
+<div class="mt-6 md:mt-0 flex items-center gap-3 shrink-0">
+<button class="flex items-center justify-center gap-2 bg-accent-burgundy text-white px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-[#600018] transition-all shadow-sm">
+<span class="material-symbols-outlined text-lg">download</span>
+                            Download PDF
+                        </button>
+<button class="p-2.5 text-neutral-400 hover:text-primary border border-transparent hover:border-neutral-200 rounded-lg transition-all">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+</div>
+</div>
+<!-- Document Row 3 -->
+<div class="document-row group flex flex-col md:flex-row items-start md:items-center justify-between p-6 bg-white border-b border-neutral-100 transition-all">
+<div class="flex-1 pr-8">
+<div class="flex items-center gap-3 mb-2">
+<span class="text-[10px] font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Society</span>
+<span class="text-xs text-neutral-400 font-medium">Published Aug 05, 2023</span>
+</div>
+<h3 class="text-xl font-bold text-primary group-hover:text-accent-burgundy transition-colors mb-2">Digital Literacy and Social Equity: Mapping the Urban Divide</h3>
+<p class="text-neutral-500 text-sm line-clamp-2 max-w-2xl mb-4 md:mb-0">
+                            A longitudinal study on the correlation between high-speed internet access and educational attainment in metropolitan centers, proposing new frameworks for digital inclusion...
+                        </p>
+<div class="flex items-center gap-4 mt-3 text-xs font-semibold text-neutral-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">person</span> Sarah J. Miller</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">timer</span> 9 min read</span>
+</div>
+</div>
+<div class="mt-6 md:mt-0 flex items-center gap-3 shrink-0">
+<button class="flex items-center justify-center gap-2 bg-accent-burgundy text-white px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-[#600018] transition-all shadow-sm">
+<span class="material-symbols-outlined text-lg">download</span>
+                            Download PDF
+                        </button>
+<button class="p-2.5 text-neutral-400 hover:text-primary border border-transparent hover:border-neutral-200 rounded-lg transition-all">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+</div>
+</div>
+<!-- Document Row 4 -->
+<div class="document-row group flex flex-col md:flex-row items-start md:items-center justify-between p-6 bg-white border-b border-neutral-100 transition-all last:rounded-b-xl last:border-b-0">
+<div class="flex-1 pr-8">
+<div class="flex items-center gap-3 mb-2">
+<span class="text-[10px] font-bold uppercase tracking-widest text-accent-burgundy bg-accent-burgundy/10 px-2 py-0.5 rounded">Economy</span>
+<span class="text-xs text-neutral-400 font-medium">Published Jul 19, 2023</span>
+</div>
+<h3 class="text-xl font-bold text-primary group-hover:text-accent-burgundy transition-colors mb-2">Fiscal Policy and Inflationary Pressures: A Comparative Review</h3>
+<p class="text-neutral-500 text-sm line-clamp-2 max-w-2xl mb-4 md:mb-0">
+                            Examining the efficacy of central bank interventions across G20 nations between 2021-2023, with a focus on interest rate cycles and sovereign debt sustainability...
+                        </p>
+<div class="flex items-center gap-4 mt-3 text-xs font-semibold text-neutral-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">person</span> Dr. Aras Kaarshe</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">timer</span> 25 min read</span>
+</div>
+</div>
+<div class="mt-6 md:mt-0 flex items-center gap-3 shrink-0">
+<button class="flex items-center justify-center gap-2 bg-accent-burgundy text-white px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-[#600018] transition-all shadow-sm">
+<span class="material-symbols-outlined text-lg">download</span>
+                            Download PDF
+                        </button>
+<button class="p-2.5 text-neutral-400 hover:text-primary border border-transparent hover:border-neutral-200 rounded-lg transition-all">
+<span class="material-symbols-outlined">bookmark</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-12 flex items-center justify-between border-t border-neutral-200 pt-8">
+<button class="flex items-center gap-2 text-sm font-bold text-neutral-400 hover:text-primary transition-all">
+<span class="material-symbols-outlined">arrow_back</span> Previous
+                </button>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 rounded-lg bg-primary text-white text-sm font-bold">1</button>
+<button class="w-10 h-10 rounded-lg bg-white text-neutral-600 hover:bg-neutral-100 text-sm font-bold">2</button>
+<button class="w-10 h-10 rounded-lg bg-white text-neutral-600 hover:bg-neutral-100 text-sm font-bold">3</button>
+<span class="px-2 text-neutral-400">...</span>
+<button class="w-10 h-10 rounded-lg bg-white text-neutral-600 hover:bg-neutral-100 text-sm font-bold">12</button>
+</div>
+<button class="flex items-center gap-2 text-sm font-bold text-primary hover:text-accent-burgundy transition-all">
+                    Next <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- Newsletter / Archive Signup -->
+<section class="bg-primary text-white py-16 px-6 lg:px-20">
+<div class="max-w-4xl mx-auto text-center">
+<h2 class="text-3xl font-bold mb-4">Stay Informed</h2>
+<p class="text-neutral-400 mb-8 max-w-xl mx-auto text-lg">Subscribe to receive monthly updates on newly released research, policy briefs, and economic insights directly to your inbox.</p>
+<form class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+<input class="flex-1 bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-accent-burgundy transition-all" placeholder="Email address" type="email"/>
+<button class="bg-accent-burgundy px-8 py-3 rounded-lg font-bold hover:bg-[#600018] transition-all">Subscribe</button>
+</form>
+</div>
+</section>
+</main>
+<!-- Global Footer -->
+<footer class="bg-white border-t border-neutral-200 pt-16 pb-8 px-6 lg:px-20">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+<div class="col-span-1 lg:col-span-1">
+<div class="flex items-center gap-3 mb-6">
+<div class="bg-primary text-white p-1.5 rounded">
+<span class="material-symbols-outlined text-xl">account_balance</span>
+</div>
+<h2 class="text-primary text-lg font-bold tracking-tight">Kaarshe Official</h2>
+</div>
+<p class="text-neutral-500 text-sm leading-relaxed mb-6">
+                    A premier research institution dedicated to rigorous analysis and intellectual advancement in economics, governance, and social policy.
+                </p>
+<div class="flex items-center gap-4">
+<a class="text-neutral-400 hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">share</span></a>
+<a class="text-neutral-400 hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">public</span></a>
+<a class="text-neutral-400 hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">mail</span></a>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-primary mb-6">Archive</h4>
+<ul class="space-y-4">
+<li><a class="text-neutral-500 text-sm hover:text-accent-burgundy transition-colors" href="#">Latest Publications</a></li>
+<li><a class="text-neutral-500 text-sm hover:text-accent-burgundy transition-colors" href="#">Economic Reports</a></li>
+<li><a class="text-neutral-500 text-sm hover:text-accent-burgundy transition-colors" href="#">Policy Briefs</a></li>
+<li><a class="text-neutral-500 text-sm hover:text-accent-burgundy transition-colors" href="#">Scholarly Papers</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-primary mb-6">Organization</h4>
+<ul class="space-y-4">
+<li><a class="text-neutral-500 text-sm hover:text-accent-burgundy transition-colors" href="#">About the Institute</a></li>
+<li><a class="text-neutral-500 text-sm hover:text-accent-burgundy transition-colors" href="#">Our Researchers</a></li>
+<li><a class="text-neutral-500 text-sm hover:text-accent-burgundy transition-colors" href="#">Methodology</a></li>
+<li><a class="text-neutral-500 text-sm hover:text-accent-burgundy transition-colors" href="#">Annual Review</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-primary mb-6">Support</h4>
+<ul class="space-y-4">
+<li><a class="text-neutral-500 text-sm hover:text-accent-burgundy transition-colors" href="#">Contact Us</a></li>
+<li><a class="text-neutral-500 text-sm hover:text-accent-burgundy transition-colors" href="#">Citation Guide</a></li>
+<li><a class="text-neutral-500 text-sm hover:text-accent-burgundy transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="text-neutral-500 text-sm hover:text-accent-burgundy transition-colors" href="#">Terms of Access</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto pt-8 border-t border-neutral-100 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-neutral-400 text-xs">© 2023 Kaarshe Official Institute. All intellectual property rights reserved.</p>
+<p class="text-neutral-400 text-xs flex items-center gap-1">Designed for authoritative research <span class="material-symbols-outlined text-[10px] text-accent-burgundy">verified_user</span></p>
+</div>
+</footer>
+</body></html>
