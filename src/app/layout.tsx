@@ -34,6 +34,10 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.shortName}`,
   },
   description: siteConfig.description,
+  icons: {
+    icon: siteConfig.logo.image?.src ?? "/favicon.ico",
+    apple: siteConfig.logo.image?.src ?? "/favicon.ico",
+  },
   keywords: ["leadership", "policy", "research", "governance", "innovation"],
   authors: [{ name: siteConfig.shortName }],
   openGraph: {

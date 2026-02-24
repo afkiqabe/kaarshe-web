@@ -1,51 +1,68 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Section } from '@/components/layout/Section'
-import { SectionHeading } from '@/components/ui/SectionHeading'
-import { ResearchDocument } from '@/components/ui/ResearchDocument'
-import { Icon } from '@/components/ui/Icon'
-import { Pagination } from '@/components/ui/Pagination'
-import { Newsletter } from '@/components/ui/Newsletter'
-import { researchPageContent } from '@/lib/constants'
+import { useState } from "react";
+import { Section } from "@/components/layout/Section";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { ResearchDocument } from "@/components/ui/ResearchDocument";
+import { Icon } from "@/components/ui/Icon";
+import { Pagination } from "@/components/ui/Pagination";
+import { researchPageContent } from "@/lib/constants";
 
 export default function ResearchPage() {
-  const { hero, categories, documents } = researchPageContent
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeCategory, setActiveCategory] = useState('all')
-  const [currentPage, setCurrentPage] = useState(1)
-  const documentsPerPage = 5
+  const { hero, categories, documents } = researchPageContent;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const documentsPerPage = 5;
 
   // Filter documents based on category and search
-  const filteredDocuments = documents.filter(doc => {
-    const matchesCategory = activeCategory === 'all' || doc.category.toLowerCase() === activeCategory
-    const matchesSearch = doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         doc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         doc.author.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesCategory && matchesSearch
-  })
+  const filteredDocuments = documents.filter((doc) => {
+    const matchesCategory =
+      activeCategory === "all" || doc.category.toLowerCase() === activeCategory;
+    const matchesSearch =
+      doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.author.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   // Pagination
-  const totalPages = Math.ceil(filteredDocuments.length / documentsPerPage)
-  const startIndex = (currentPage - 1) * documentsPerPage
-  const paginatedDocuments = filteredDocuments.slice(startIndex, startIndex + documentsPerPage)
+  const totalPages = Math.ceil(filteredDocuments.length / documentsPerPage);
+  const startIndex = (currentPage - 1) * documentsPerPage;
+  const paginatedDocuments = filteredDocuments.slice(
+    startIndex,
+    startIndex + documentsPerPage,
+  );
 
   return (
     <>
       {/* Hero Section */}
       <Section background="white" className="border-b border-neutral-100">
-        <div className="max-w-3xl">
+        <div className="max-w-4xl mx-auto text-center">
           <SectionHeading
             badge={hero.badge}
-            title={hero.title}
-            titleHighlight={hero.titleHighlight}
+            title={
+              <>
+                {hero.title}{" "}
+                <span className="text-accent-burgundy">
+                  {hero.titleHighlight}
+                </span>
+              </>
+            }
             description={hero.description}
-            align="left"
+            align="center"
           />
-          <div className="flex flex-wrap gap-4 mt-8">
+          <div className="flex flex-wrap gap-3 mt-8 justify-center">
             {hero.stats.map((stat, index) => (
-              <div key={index} className="flex items-center gap-2 text-sm font-medium text-neutral-500">
-                <Icon name={stat.icon} size="sm" />
+              <div
+                key={index}
+                className="flex items-center gap-2 text-sm font-semibold text-neutral-600 bg-white border border-neutral-200 rounded-full px-4 py-2"
+              >
+                <Icon
+                  name={stat.icon}
+                  size="sm"
+                  className="text-accent-burgundy"
+                />
                 <span>{stat.label}</span>
               </div>
             ))}
@@ -54,15 +71,15 @@ export default function ResearchPage() {
       </Section>
 
       {/* Search & Filter Controls */}
-      <div className="sticky top-[73px] z-40 bg-background-light py-6 border-b border-neutral-200">
+      <div className="sticky top-18.25 z-40 bg-background-light py-6 border-b border-neutral-200">
         <div className="max-w-7xl mx-auto px-6 lg:px-20">
           <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
             {/* Search Bar */}
             <div className="relative w-full lg:max-w-md">
-              <Icon 
-                name="search" 
-                size="sm" 
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" 
+              <Icon
+                name="search"
+                size="sm"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
               />
               <input
                 type="text"
@@ -82,13 +99,13 @@ export default function ResearchPage() {
                 <button
                   key={category.value}
                   onClick={() => {
-                    setActiveCategory(category.value)
-                    setCurrentPage(1)
+                    setActiveCategory(category.value);
+                    setCurrentPage(1);
                   }}
                   className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all ${
                     activeCategory === category.value
-                      ? 'bg-primary text-white'
-                      : 'bg-white border border-neutral-200 text-neutral-600 hover:border-accent-burgundy hover:text-accent-burgundy'
+                      ? "bg-primary text-white"
+                      : "bg-white border border-neutral-200 text-neutral-600 hover:border-accent-burgundy hover:text-accent-burgundy"
                   }`}
                 >
                   {category.label}
@@ -119,13 +136,12 @@ export default function ResearchPage() {
         {/* No Results */}
         {filteredDocuments.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-neutral-500">No documents found matching your criteria.</p>
+            <p className="text-neutral-500">
+              No documents found matching your criteria.
+            </p>
           </div>
         )}
       </Section>
-
-      {/* Newsletter */}
-      <Newsletter variant="dark" />
     </>
-  )
+  );
 }

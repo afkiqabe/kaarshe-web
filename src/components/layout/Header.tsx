@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
@@ -11,8 +11,21 @@ import { Icon } from "@/components/ui/Icon";
 import { Container } from "./Container";
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menu, setMenu] = useState({ isOpen: false, openedOnPathname: "" });
   const pathname = usePathname();
+
+  const isMenuOpen = menu.isOpen && menu.openedOnPathname === pathname;
+
+  const toggleMenu = () => {
+    setMenu((prev) => {
+      const currentlyOpen = prev.isOpen && prev.openedOnPathname === pathname;
+      return { isOpen: !currentlyOpen, openedOnPathname: pathname };
+    });
+  };
+
+  const closeMenu = () => {
+    setMenu({ isOpen: false, openedOnPathname: pathname });
+  };
 
   return (
     <header
@@ -21,17 +34,17 @@ export function Header() {
       )}
     >
       <Container>
-        <nav className="flex items-center justify-between h-20">
+        <nav className="flex items-center justify-between py-6">
           <Logo variant="dark" />
 
           {/* Desktop Navigation */}
-          <ul className="hidden md:flex items-center gap-8">
+          <ul className="hidden md:flex items-center gap-10">
             {navigation.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
                   className={cn(
-                    "text-xs font-bold uppercase tracking-widest transition-colors",
+                    "text-sm font-bold uppercase tracking-widest transition-colors",
                     pathname === item.href
                       ? "text-primary"
                       : "text-primary/70 hover:text-primary",
@@ -52,7 +65,7 @@ export function Header() {
 
           {/* Mobile Menu Button */}
           <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={toggleMenu}
             className="md:hidden p-2 text-primary"
             aria-label="Toggle menu"
           >
@@ -69,19 +82,24 @@ export function Header() {
                   <Link
                     href={item.href}
                     className={cn(
-                      "block text-sm font-bold uppercase tracking-wider transition-colors",
+                      "block text-base font-bold uppercase tracking-wider transition-colors",
                       pathname === item.href
                         ? "text-primary"
                         : "text-primary/70 hover:text-primary",
                     )}
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={closeMenu}
                   >
                     {item.label}
                   </Link>
                 </li>
               ))}
               <li className="pt-2">
-                <Button href="/contact" size="sm" className="w-full">
+                <Button
+                  href="/contact"
+                  size="sm"
+                  className="w-full"
+                  onClick={closeMenu}
+                >
                   Contact
                 </Button>
               </li>

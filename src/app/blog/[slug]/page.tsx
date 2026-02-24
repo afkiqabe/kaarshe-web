@@ -1,24 +1,32 @@
-import { Section } from '@/components/layout/Section'
-import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
-import { ProgressBar } from '@/components/ui/ProgressBar'
-import { Icon } from '@/components/ui/Icon'
-import { Button } from '@/components/ui/Button'
-import { Newsletter } from '@/components/ui/Newsletter'
-import Image from 'next/image'
-import Link from 'next/link'
-import { blogPostContent } from '@/lib/constants'
-import { notFound } from 'next/navigation'
+import { Section } from "@/components/layout/Section";
+// import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { ProgressBar } from "@/components/ui/ProgressBar";
+import { Icon } from "@/components/ui/Icon";
+import Image from "next/image";
+import Link from "next/link";
+import { blogPostContent } from "@/lib/constants";
+import { notFound } from "next/navigation";
+
+type PostBlock =
+  | { type: "paragraph"; content: string }
+  | { type: "heading"; level: "h2" | "h3"; content: string }
+  | { type: "list"; items: string[] }
+  | { type: "takeaways"; items: string[] };
 
 // This would normally fetch from an API
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
+export default function BlogPostPage() {
   // In a real app, you'd fetch the post based on the slug
   // For now, we'll use our constant
-  const post = blogPostContent
+  const post = blogPostContent;
+
+  const marcusAvatar = "/images/authors/marcus-thorne.jpg";
 
   // If post not found, return 404
   if (!post) {
-    notFound()
+    notFound();
   }
+
+  const contentBlocks = (post.content as PostBlock[]) ?? [];
 
   return (
     <>
@@ -28,14 +36,17 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
       <Section size="sm" className="pt-16 pb-12">
         <div className="max-w-4xl mx-auto">
           {/* Breadcrumbs */}
-          <Breadcrumbs
+          {/* <Breadcrumbs
             items={[
-              { label: 'Home', href: '/' },
-              { label: 'Insights', href: '/blog' },
-              { label: post.category, href: `/blog?category=${post.category.toLowerCase()}` },
+              { label: "Home", href: "/" },
+              { label: "Insights", href: "/blog" },
+              {
+                label: post.category,
+                href: `/blog?category=${post.category.toLowerCase()}`,
+              },
             ]}
             className="mb-8"
-          />
+          /> */}
 
           {/* Headline */}
           <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-primary mb-10">
@@ -73,9 +84,9 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
       </Section>
 
       {/* Featured Image */}
-      <Section className="px-6 mb-20">
+      <Section size="sm" className="px-6 pb-6">
         <div className="max-w-6xl mx-auto">
-          <div className="aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl relative">
+          <div className="aspect-21/9 rounded-2xl overflow-hidden shadow-2xl relative">
             <Image
               src={post.featuredImage.src}
               alt={post.featuredImage.alt}
@@ -84,60 +95,87 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
               priority
             />
           </div>
-          <p className="max-w-6xl mx-auto mt-4 text-xs text-neutral-400 uppercase tracking-widest text-center italic">
-            {post.featuredImage.caption}
-          </p>
         </div>
       </Section>
 
       {/* Article Body */}
-      <Section className="px-6 pb-24 relative">
-        <div className="max-w-[800px] mx-auto article-content">
-          {post.content.map((block, index) => {
-            switch (block.type) {
-              case 'paragraph':
-                return (
-                  <p key={index} className="text-xl leading-relaxed first-letter:text-7xl first-letter:font-serif first-letter:float-left first-letter:mr-4 first-letter:mt-2 text-neutral-700">
-                    {block.content}
-                  </p>
-                )
-              case 'heading':
-                return block.level === 'h2' ? (
-                  <h2 key={index} className="font-serif text-3xl mt-12 mb-6">{block.content}</h2>
-                ) : (
-                  <h3 key={index} className="font-serif text-2xl mt-8 mb-4">{block.content}</h3>
-                )
-              case 'quote':
-                return (
-                  <blockquote key={index} className="my-16 border-l-4 border-accent-burgundy pl-8 py-4">
-                    <p className="font-serif text-3xl italic text-accent-burgundy leading-snug">
+      <Section size="sm" className="px-6 pt-0 pb-24 relative">
+        <div className="max-w-3xl mx-auto">
+          {/* Article Content */}
+          <article className="space-y-8 article-content">
+            {contentBlocks.map((block, index) => {
+              switch (block.type) {
+                case "paragraph":
+                  return (
+                    <p
+                      key={index}
+                      className={
+                        index === 0
+                          ? "text-xl md:text-2xl leading-relaxed text-neutral-800"
+                          : "text-base md:text-lg leading-8 text-neutral-700"
+                      }
+                    >
                       {block.content}
                     </p>
-                    {block.author && (
-                      <cite className="text-sm font-bold uppercase tracking-widest text-neutral-500 mt-4 block not-italic">
-                        — {block.author}
-                      </cite>
-                    )}
-                  </blockquote>
-                )
-              case 'takeaways':
-                return (
-                  <div key={index} className="my-12 p-8 bg-neutral-100 rounded-xl border border-neutral-200">
-                    <h3 className="font-bold text-lg mb-4 uppercase tracking-tight">Key Takeaways for Leadership:</h3>
-                    <ul className="space-y-4">
-                      {block.items.map((item: string, idx: number) => (
-                        <li key={idx} className="flex gap-3">
-                          <Icon name="check_circle" className="text-accent-burgundy" />
-                          <span>{item}</span>
-                        </li>
+                  );
+                case "heading":
+                  return block.level === "h2" ? (
+                    <h2
+                      key={index}
+                      className="text-2xl md:text-3xl font-bold text-primary mt-12"
+                    >
+                      {block.content}
+                    </h2>
+                  ) : (
+                    <h3
+                      key={index}
+                      className="text-xl md:text-2xl font-bold text-primary mt-10"
+                    >
+                      {block.content}
+                    </h3>
+                  );
+                case "list":
+                  return (
+                    <ul
+                      key={index}
+                      className="grid grid-cols-1 md:grid-cols-2 gap-3 list-disc pl-5 text-base md:text-lg leading-8 text-neutral-700"
+                    >
+                      {block.items.map((item, idx) => (
+                        <li key={idx}>{item}</li>
                       ))}
                     </ul>
-                  </div>
-                )
-              default:
-                return null
-            }
-          })}
+                  );
+                case "takeaways":
+                  return (
+                    <div
+                      key={index}
+                      className="my-12 p-8 bg-neutral-100 rounded-xl border border-neutral-200"
+                    >
+                      <h3 className="font-bold text-lg mb-4 uppercase tracking-tight">
+                        Key Takeaways
+                      </h3>
+                      <ul className="space-y-4">
+                        {block.items.map((item, idx) => (
+                          <li
+                            key={idx}
+                            className="flex gap-3 text-neutral-700 leading-relaxed"
+                          >
+                            <Icon
+                              name="check_circle"
+                              className="text-accent-burgundy"
+                              size="sm"
+                            />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                default:
+                  return null;
+              }
+            })}
+          </article>
 
           {/* Share Buttons */}
           <div className="mt-20 pt-10 border-t border-neutral-200 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -207,22 +245,28 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
               <h3 className="text-xl font-bold mt-3 group-hover:text-accent-burgundy transition-colors leading-tight">
                 {relatedPost.title}
               </h3>
-              <div className="mt-6 flex items-center gap-3">
-                <div className="size-8 rounded-full bg-neutral-300 relative">
-                  {relatedPost.author && (
-                    <span className="text-xs font-bold uppercase tracking-widest text-neutral-400">
-                      {relatedPost.author} • {relatedPost.readTime}
-                    </span>
-                  )}
+              <div className="mt-6 flex items-center gap-3 text-sm text-neutral-500">
+                <div className="size-8 rounded-full bg-neutral-200 overflow-hidden border border-neutral-100 relative shrink-0">
+                  <Image
+                    src={marcusAvatar}
+                    alt="Marcus Thorne"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
+                <span className="font-medium text-neutral-600">
+                  Marcus Thorne
+                </span>
+                {relatedPost.readTime && (
+                  <span className="text-neutral-400">
+                    • {relatedPost.readTime}
+                  </span>
+                )}
               </div>
             </Link>
           ))}
         </div>
       </Section>
-
-      {/* Newsletter CTA */}
-      <Newsletter variant="primary" />
     </>
-  )
+  );
 }

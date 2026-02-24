@@ -10,7 +10,7 @@ export const navigation: NavItem[] = [
   { label: 'Vision', href: '/vision' },
   { label: 'Blog', href: '/blog' },
   { label: 'Research', href: '/research' },
-  { label: 'Publications', href: '/publications' },
+  // { label: 'Publications', href: '/publications' },
 ]
 
 export const siteConfig = {

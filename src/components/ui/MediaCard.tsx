@@ -1,21 +1,21 @@
-'use client'
+"use client";
 
-import { cn } from '@/lib/utils/cn'
-import { Icon } from './Icon'
-import Image from 'next/image'
+import { cn } from "@/lib/utils/cn";
+import { Icon } from "./Icon";
+import Image from "next/image";
 
 interface MediaCardProps {
-  type: string
-  source: string
-  duration?: string
-  format?: string
-  title: string
-  description?: string
-  author?: string
-  image?: string
-  videoUrl?: string
-  url?: string
-  className?: string
+  type: string;
+  source: string;
+  duration?: string;
+  format?: string;
+  title: string;
+  description?: string;
+  author?: string;
+  image?: string;
+  videoUrl?: string;
+  url?: string;
+  className?: string;
 }
 
 export function MediaCard({
@@ -27,43 +27,53 @@ export function MediaCard({
   description,
   author,
   image,
-  videoUrl,
   url,
   className,
 }: MediaCardProps) {
-  const isPress = type === 'Press'
-  const isVideo = ['Interview', 'Keynote', 'Podcast', 'Conference'].includes(type)
+  const isPress = type === "Press";
+  const isVideo = ["Interview", "Keynote", "Podcast", "Conference"].includes(
+    type,
+  );
 
   if (isPress) {
     return (
-      <div className={cn(
-        'bg-white dark:bg-neutral-900 p-8 rounded-2xl media-card-shadow border border-primary/5',
-        'flex flex-col justify-between group hover:shadow-lg transition-shadow',
-        className
-      )}>
+      <div
+        className={cn(
+          "bg-white dark:bg-neutral-900 p-8 rounded-2xl media-card-shadow border border-primary/5",
+          "flex flex-col justify-between group hover:shadow-lg transition-shadow",
+          className,
+        )}
+      >
         <div className="space-y-4">
           <div className="size-10 bg-primary/5 dark:bg-white/10 rounded flex items-center justify-center">
             <Icon name="article" className="text-primary dark:text-white" />
           </div>
           <h4 className="text-xl font-bold leading-tight group-hover:text-accent-burgundy transition-colors italic">
-            "{title}"
+            &ldquo;{title}&rdquo;
           </h4>
         </div>
         <div className="mt-8 pt-6 border-t border-primary/5 flex items-center justify-between">
           <div>
             <p className="text-sm font-bold">{source}</p>
-            {author && <p className="text-xs text-primary/40">Review by {author}</p>}
+            {author && (
+              <p className="text-xs text-primary/40">Review by {author}</p>
+            )}
           </div>
-          <a href={url} target="_blank" rel="noopener noreferrer" className="text-primary/20 hover:text-accent-burgundy transition-colors">
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary/20 hover:text-accent-burgundy transition-colors"
+          >
             <Icon name="open_in_new" size="md" />
           </a>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className={cn('group flex flex-col gap-4 cursor-pointer', className)}>
+    <div className={cn("group flex flex-col gap-4 cursor-pointer", className)}>
       <div className="relative aspect-video rounded-2xl overflow-hidden bg-neutral-200">
         {image && (
           <Image
@@ -98,5 +108,5 @@ export function MediaCard({
         )}
       </div>
     </div>
-  )
+  );
 }

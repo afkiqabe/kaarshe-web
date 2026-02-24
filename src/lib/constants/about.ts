@@ -2,7 +2,7 @@ export const aboutPageContent = {
   hero: {
     badge: 'Biography',
     title: 'A Life of Service and Thought Leadership',
-    description: 'Tracing the journey of a visionary leader committed to excellence, systemic reform, and sustainable community impact.',
+    description: 'Tracing the journey of a visionary leader committed to excellence, systemic reform, and sustainable community impact. Kaarshe is a visionary leader committed to excellence, systemic reform, and sustainable community impact. Guided by integrity and purpose, he focuses on strengthening institutions, improving systems, and creating long-term solutions that uplift communities and drive meaningful progress.His journey reflects resilience, strategic leadership, and a deep sense of responsibility to serve. Through innovation, collaboration, and forward-thinking strategies, Kaarshe continues to champion transformative change that empowers people and builds a stronger, more sustainable future.',
     stats: {
       years: '20+',
       label: 'Years of Public Service',

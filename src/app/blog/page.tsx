@@ -1,41 +1,44 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Section } from '@/components/layout/Section'
-import { SectionHeading } from '@/components/ui/SectionHeading'
-import { PostCard } from '@/components/ui/PostCard'
-import { Pagination } from '@/components/ui/Pagination'
-import { Newsletter } from '@/components/ui/Newsletter'
-import Image from 'next/image'
-import Link from 'next/link'
-import { blogPageContent } from '@/lib/constants'
+import { useState } from "react";
+import { Section } from "@/components/layout/Section";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { PostCard } from "@/components/ui/PostCard";
+import { Pagination } from "@/components/ui/Pagination";
+import Image from "next/image";
+import Link from "next/link";
+import { blogPageContent } from "@/lib/constants";
 
 export default function BlogPage() {
-  const { hero, featured, categories, posts } = blogPageContent
-  const [currentPage, setCurrentPage] = useState(1)
-  const [activeCategory, setActiveCategory] = useState('all')
-  const postsPerPage = 6
+  const { hero, featured, categories, posts } = blogPageContent;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [activeCategory, setActiveCategory] = useState("all");
+  const postsPerPage = 6;
 
   // Filter posts based on category
-  const filteredPosts = activeCategory === 'all' 
-    ? posts 
-    : posts.filter(post => post.category.toLowerCase() === activeCategory)
+  const filteredPosts =
+    activeCategory === "all"
+      ? posts
+      : posts.filter((post) => post.category.toLowerCase() === activeCategory);
 
   // Pagination
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage)
-  const startIndex = (currentPage - 1) * postsPerPage
-  const paginatedPosts = filteredPosts.slice(startIndex, startIndex + postsPerPage)
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  const startIndex = (currentPage - 1) * postsPerPage;
+  const paginatedPosts = filteredPosts.slice(
+    startIndex,
+    startIndex + postsPerPage,
+  );
 
   return (
     <>
       {/* Hero Section */}
       <Section background="white" className="border-b border-zinc-100">
-        <div className="max-w-3xl">
+        <div className="max-w-3xl mx-auto">
           <SectionHeading
-            badge={hero.badge}
+            // badge={hero.badge}
             title={hero.title}
             description={hero.description}
-            align="left"
+            align="center"
           />
         </div>
       </Section>
@@ -45,7 +48,7 @@ export default function BlogPage() {
         <Link href={`/blog/${featured.slug}`} className="group cursor-pointer">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-8 overflow-hidden rounded-lg">
-              <div className="aspect-[16/9] bg-zinc-200 relative transition-transform duration-700 group-hover:scale-105">
+              <div className="aspect-video bg-zinc-200 relative transition-transform duration-700 group-hover:scale-105">
                 <Image
                   src={featured.image}
                   alt={featured.title}
@@ -80,7 +83,9 @@ export default function BlogPage() {
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-primary">{featured.author.name}</p>
+                  <p className="text-sm font-bold text-primary">
+                    {featured.author.name}
+                  </p>
                   <p className="text-xs text-zinc-500 font-sans uppercase tracking-tight">
                     {featured.date} • {featured.readTime}
                   </p>
@@ -102,13 +107,13 @@ export default function BlogPage() {
               <button
                 key={category.value}
                 onClick={() => {
-                  setActiveCategory(category.value)
-                  setCurrentPage(1)
+                  setActiveCategory(category.value);
+                  setCurrentPage(1);
                 }}
                 className={`text-xs font-bold uppercase tracking-widest transition-colors ${
                   activeCategory === category.value
-                    ? 'text-accent-burgundy border-b-2 border-accent-burgundy'
-                    : 'text-zinc-400 hover:text-primary'
+                    ? "text-accent-burgundy border-b-2 border-accent-burgundy"
+                    : "text-zinc-400 hover:text-primary"
                 }`}
               >
                 {category.label}
@@ -130,9 +135,6 @@ export default function BlogPage() {
           onPageChange={setCurrentPage}
         />
       </Section>
-
-      {/* Newsletter Section */}
-      <Newsletter variant="primary" />
     </>
-  )
+  );
 }

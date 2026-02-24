@@ -1,55 +1,62 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Section } from '@/components/layout/Section'
-import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
-import { Button } from '@/components/ui/Button'
-import { Icon } from '@/components/ui/Icon'
-import { Newsletter } from '@/components/ui/Newsletter'
-import Image from 'next/image'
-import { contactPageContent } from '@/lib/constants'
+import { useState } from "react";
+import { Section } from "@/components/layout/Section";
+// import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
+import { contactPageContent } from "@/lib/constants";
 
 export default function ContactPage() {
-  const { hero, form, office, emails, socialLinks } = contactPageContent
+  const { hero, form, office, socialLinks } = contactPageContent;
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    subject: 'general',
-    message: '',
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    subject: "general",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
     // Simulate API call
     setTimeout(() => {
-      setIsSubmitting(false)
-      setSubmitStatus('success')
-      setTimeout(() => setSubmitStatus('idle'), 3000)
-    }, 1000)
-  }
+      setIsSubmitting(false);
+      setSubmitStatus("success");
+      setTimeout(() => setSubmitStatus("idle"), 3000);
+    }, 1000);
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
 
   return (
     <>
       {/* Hero Section */}
       <section className="relative py-20 bg-primary text-white overflow-hidden">
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary via-transparent to-primary"></div>
-          <div className="h-full w-full bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px]"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-primary via-transparent to-primary"></div>
+          <div className="h-full w-full bg-[radial-gradient(#ffffff_1px,transparent_1px)] bg-size-[24px_24px]"></div>
         </div>
         <div className="relative max-w-7xl mx-auto px-6 text-center">
-          <Breadcrumbs items={hero.breadcrumbs} className="justify-center mb-6 text-white/60" />
+          {/* <Breadcrumbs
+            items={hero.breadcrumbs}
+            className="justify-center mb-6 text-white/60"
+          /> */}
           <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
             {hero.title}
           </h1>
@@ -65,7 +72,9 @@ export default function ContactPage() {
           {/* Contact Form Column */}
           <div className="space-y-8">
             <div className="border-b border-primary/10 pb-6">
-              <h2 className="text-3xl font-bold tracking-tight mb-2">{form.title}</h2>
+              <h2 className="text-3xl font-bold tracking-tight mb-2">
+                {form.title}
+              </h2>
               <p className="text-primary/60">{form.description}</p>
             </div>
 
@@ -170,8 +179,8 @@ export default function ContactPage() {
                 className="w-full bg-accent-burgundy hover:bg-accent-burgundy/90 text-white py-5 text-lg shadow-lg shadow-accent-burgundy/20"
                 isLoading={isSubmitting}
               >
-                {submitStatus === 'success' ? 'Message Sent!' : 'Send Message'}
-                {!isSubmitting && submitStatus !== 'success' && (
+                {submitStatus === "success" ? "Message Sent!" : "Send Message"}
+                {!isSubmitting && submitStatus !== "success" && (
                   <Icon name="send" size="sm" className="ml-2" />
                 )}
               </Button>
@@ -185,47 +194,47 @@ export default function ContactPage() {
                 <Icon name="location_on" className="text-accent-burgundy" />
                 {office.title}
               </h3>
-              <div className="h-48 w-full rounded-xl overflow-hidden grayscale contrast-125 mb-4 relative">
-                <Image
-                  src={office.mapImage}
-                  alt="Office location map"
-                  fill
-                  className="object-cover"
+              <div className="h-56 w-full rounded-xl overflow-hidden mb-4 border border-primary/10 bg-white">
+                <iframe
+                  title="Kaarshe office location map"
+                  src={office.mapEmbedUrl}
+                  className="h-full w-full"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
                 />
               </div>
               <p className="text-primary/70 leading-relaxed">
-                {office.address.street}<br />
-                {office.address.city}, {office.address.state} {office.address.zip}<br />
+                {office.address.name && (
+                  <>
+                    {office.address.name}
+                    <br />
+                  </>
+                )}
+                {office.address.street}
+                <br />
+                {office.address.city}
+                {office.address.state ? `, ${office.address.state}` : ""}
+                {office.address.zip ? ` ${office.address.zip}` : ""}
+                <br />
                 {office.address.country}
               </p>
+              <a
+                href={office.mapLinkUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-accent-burgundy hover:underline"
+              >
+                Open in Google Maps
+                <Icon name="open_in_new" size="sm" />
+              </a>
             </div>
 
-            <div className="space-y-6">
-              <h3 className="text-xl font-bold flex items-center gap-3">
-                <Icon name="alternate_email" className="text-accent-burgundy" />
-                Email Communications
-              </h3>
-              <div className="grid gap-4">
-                {emails.map((item, index) => (
-                  <a
-                    key={index}
-                    href={`mailto:${item.email}`}
-                    className="group flex items-center justify-between p-4 bg-white rounded-lg border border-primary/5 hover:border-accent-burgundy transition-colors"
-                  >
-                    <span className="font-medium">{item.label}</span>
-                    <span className="text-accent-burgundy opacity-0 group-hover:opacity-100 transition-opacity font-bold">
-                      {item.email}
-                    </span>
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-6 pt-4">
+            <div className="space-y-6 pt-4 text-center">
               <h3 className="text-xs font-bold uppercase tracking-widest text-primary/40">
-                Connect Socially
+                Connect
               </h3>
-              <div className="flex gap-4">
+              <div className="flex justify-center gap-4">
                 {socialLinks.map((link, index) => (
                   <a
                     key={index}
@@ -243,9 +252,6 @@ export default function ContactPage() {
           </div>
         </div>
       </Section>
-
-      {/* Newsletter Block */}
-      <Newsletter variant="primary" />
     </>
-  )
+  );
 }

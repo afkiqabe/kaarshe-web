@@ -1,6 +1,6 @@
 export const blogPageContent = {
   hero: {
-    badge: 'Our Journal',
+    // badge: 'Our Journal',
     title: 'Insights & Perspectives',
     description: 'Exploring the intersections of strategy, global culture, and technical innovation. Written by the thinkers at Kaarshe.',
   },

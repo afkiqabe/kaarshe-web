@@ -9,7 +9,7 @@ export const navigation: NavItem[] = [
   { label: "About", href: "/about" },
   { label: "Vision", href: "/vision" },
   { label: "Research", href: "/research" },
-  { label: "Publications", href: "/publications" },
+  // { label: "Publications", href: "/publications" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
@@ -27,17 +27,18 @@ export const siteConfig = {
   logo: {
     icon: "account_balance",
     text: "KAARSHE",
+    image: {
+      src: "/images/logo.png",
+      alt: "Kaarshe logo",
+    },
   },
   contact: {
-    email: "info@kaarshe.gov",
-    pressEmail: "press@kaarshe.gov",
-    phone: "+1 (555) 123-4567",
     address: {
-      street: "1200 Pennsylvania Avenue NW",
-      city: "Washington",
-      state: "DC",
-      zip: "20004",
-      country: "United States",
+      street: "Makka Al-Mukarama",
+      city: "Mogadishu",
+      state: "",
+      zip: "",
+      country: "Somalia",
     },
   },
   social: {
@@ -48,26 +49,21 @@ export const siteConfig = {
   },
   footer: {
     quickLinks: [
-      { label: "About the Visionary", href: "/about" },
-      { label: "Strategic Framework", href: "/vision" },
-      { label: "Resource Archive", href: "/research" },
-      { label: "Speaking Engagements", href: "/contact" },
-      { label: "Media Center", href: "/publications" },
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms of Service", href: "/terms" },
+      { label: "About", href: "/about" },
+      { label: "Vision", href: "/vision" },
+
+      { label: "Contact", href: "/contact" },
     ],
     resources: [
-      { label: "White Papers", href: "/research?type=white-papers" },
-      { label: "Annual Reports", href: "/research?type=annual-reports" },
-      { label: "Policy Briefs", href: "/research?type=policy-briefs" },
-      { label: "Press Kit", href: "/press-kit" },
-      { label: "Speeches", href: "/publications?type=speeches" },
+      { label: "Book Speaking", href: "/book-speaking" },
+      // { label: "Publications", href: "/publications" },
+      { label: "Research", href: "/research" },
+      { label: "Blog", href: "/blog" },
     ],
     legal: [
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms of Service", href: "/terms" },
-      { label: "Cookie Policy", href: "/cookies" },
-      { label: "Accessibility Statement", href: "/accessibility" },
+      { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Terms and Conditions", href: "/terms-and-conditions" },
+      { label: "Disclaimer", href: "/disclaimer" },
     ],
   },
 };
