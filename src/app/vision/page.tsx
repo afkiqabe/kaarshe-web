@@ -1,10 +1,11 @@
 import { Section } from "@/components/layout/Section";
-import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import Link from "next/link";
 import { visionPageContent } from "@/lib/constants";
+import { getWpPageBySlug } from "@/lib/wp";
+import { acfGet, acfString, coerceStringList } from "@/lib/wpAcf";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -13,7 +14,73 @@ export default async function VisionPage({
 }: {
   searchParams?: Promise<SearchParams>;
 }) {
-  const { hero, pillars, quote, strategies } = visionPageContent;
+  const fallback = visionPageContent;
+  const visionSlug = process.env.WORDPRESS_VISION_PAGE_SLUG ?? "vision";
+  const wpPage = await getWpPageBySlug(visionSlug);
+  const acf = wpPage?.acf;
+
+  const hero = {
+    title: acfString(acf, ["hero.title", "hero_title"], fallback.hero.title),
+    titleHighlight: acfString(
+      acf,
+      ["hero.title_highlight", "hero_title_highlight"],
+      fallback.hero.titleHighlight,
+    ),
+    description: acfString(
+      acf,
+      ["hero.description", "hero_description"],
+      fallback.hero.description,
+    ),
+  };
+
+  const pillars = (
+    (acfGet<unknown>(acf, ["pillars", "policy_pillars"], undefined) as
+      | Array<{
+          icon?: string;
+          title?: string;
+          description?: string;
+          points?: unknown;
+        }>
+      | undefined) ?? fallback.pillars
+  ).map((pillar, index) => ({
+    ...pillar,
+    points:
+      coerceStringList(pillar.points, {
+        keys: ["text", "point", "value", "label"],
+      }) ??
+      fallback.pillars[index]?.points ??
+      [],
+  }));
+
+  const quote = {
+    text: acfString(acf, ["quote.text", "quote_text"], fallback.quote.text),
+    author: acfString(
+      acf,
+      ["quote.author", "quote_author"],
+      fallback.quote.author,
+    ),
+    title: acfString(acf, ["quote.title", "quote_title"], fallback.quote.title),
+  };
+
+  const strategies = (
+    (acfGet<unknown>(acf, ["strategies", "topics"], undefined) as
+      | Array<{
+          id?: string;
+          title?: string;
+          description?: string;
+          image?: unknown;
+          objectives?: unknown;
+        }>
+      | undefined) ?? fallback.strategies
+  ).map((strategy, index) => ({
+    ...strategy,
+    objectives:
+      coerceStringList(strategy.objectives, {
+        keys: ["text", "objective", "value", "label"],
+      }) ??
+      fallback.strategies[index]?.objectives ??
+      [],
+  }));
   const resolvedSearchParams = (await searchParams) ?? {};
   const activeTopic =
     typeof resolvedSearchParams.topic === "string"
@@ -21,6 +88,35 @@ export default async function VisionPage({
       : "economy";
   const activeStrategy =
     strategies.find((strategy) => strategy.id === activeTopic) ?? strategies[0];
+
+  const activeImage = (() => {
+    const raw = activeStrategy?.image;
+
+    if (typeof raw === "string" && raw) {
+      return { src: raw, alt: activeStrategy?.title ?? "" };
+    }
+
+    if (typeof raw === "object" && raw !== null) {
+      const record = raw as Record<string, unknown>;
+      const src =
+        (typeof record.url === "string" && record.url) ||
+        (typeof record.src === "string" && record.src) ||
+        "";
+      const alt =
+        (typeof record.alt === "string" && record.alt) ||
+        activeStrategy?.title ||
+        "";
+      if (src) return { src, alt };
+    }
+
+    const fallbackMatch = fallback.strategies.find(
+      (s) => s.id === activeStrategy?.id,
+    );
+    return {
+      src: fallbackMatch?.image ?? fallback.strategies[0]?.image ?? "",
+      alt: activeStrategy?.title ?? fallbackMatch?.title ?? "",
+    };
+  })();
 
   const getMenuItemClassName = (isActive: boolean) =>
     isActive
@@ -79,25 +175,36 @@ export default async function VisionPage({
               className="bg-white p-8 rounded-lg border border-primary/5 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="text-accent-gold mb-4">
-                <Icon name={pillar.icon} size="xl" />
+                <Icon
+                  name={
+                    pillar.icon ??
+                    fallback.pillars[index]?.icon ??
+                    "trending_up"
+                  }
+                  size="xl"
+                />
               </div>
               <h3 className="text-accent-burgundy text-xl font-bold mb-4">
-                {pillar.title}
+                {pillar.title ?? fallback.pillars[index]?.title ?? ""}
               </h3>
               <p className="text-gray-600 text-sm leading-relaxed mb-6">
-                {pillar.description}
+                {pillar.description ??
+                  fallback.pillars[index]?.description ??
+                  ""}
               </p>
               <ul className="space-y-2 text-sm text-gray-700">
-                {pillar.points.map((point, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    <Icon
-                      name="check_circle"
-                      className="text-accent-gold"
-                      size="sm"
-                    />
-                    {point}
-                  </li>
-                ))}
+                {(pillar.points ?? fallback.pillars[index]?.points ?? []).map(
+                  (point, idx) => (
+                    <li key={idx} className="flex items-center gap-2">
+                      <Icon
+                        name="check_circle"
+                        className="text-accent-gold"
+                        size="sm"
+                      />
+                      {point}
+                    </li>
+                  ),
+                )}
               </ul>
             </div>
           ))}
@@ -205,13 +312,15 @@ export default async function VisionPage({
               Deep-Dive: {activeStrategy.title}
             </h2>
             <div className="aspect-video w-full rounded-xl mb-8 overflow-hidden bg-neutral-200">
-              <Image
-                src={activeStrategy.image}
-                alt={activeStrategy.title}
-                width={800}
-                height={450}
-                className="w-full h-full object-cover"
-              />
+              {activeImage.src ? (
+                <Image
+                  src={activeImage.src}
+                  alt={activeImage.alt}
+                  width={800}
+                  height={450}
+                  className="w-full h-full object-cover"
+                />
+              ) : null}
             </div>
             <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed space-y-6">
               <p>{activeStrategy.description}</p>
@@ -219,7 +328,7 @@ export default async function VisionPage({
                 Key Objectives:
               </h4>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 list-none pl-5">
-                {activeStrategy.objectives.map((objective, index) => (
+                {(activeStrategy.objectives ?? []).map((objective, index) => (
                   <li key={index} className="gold-bullet py-1">
                     {objective}
                   </li>

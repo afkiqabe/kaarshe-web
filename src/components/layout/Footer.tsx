@@ -2,9 +2,30 @@ import Link from "next/link";
 import { Container } from "./Container";
 import { Icon } from "@/components/ui/Icon";
 import { siteConfig } from "@/lib/constants";
-import { Button } from "@/components/ui/Button";
+import { FooterNewsletterFormClient } from "./FooterNewsletterFormClient";
 
-export function Footer() {
+type FooterLink = { label: string; href: string };
+
+export function Footer({
+  newsletter,
+  quickLinks = siteConfig.footer.quickLinks,
+  resources = siteConfig.footer.resources,
+  legal = siteConfig.footer.legal,
+  socials = siteConfig.social,
+  copyright,
+}: {
+  newsletter?: {
+    title?: string;
+    description?: string;
+    emailPlaceholder?: string;
+    buttonLabel?: string;
+  };
+  quickLinks?: FooterLink[];
+  resources?: FooterLink[];
+  legal?: FooterLink[];
+  socials?: Partial<typeof siteConfig.social>;
+  copyright?: string;
+}) {
   return (
     <footer className="bg-primary text-white py-20">
       <Container>
@@ -16,34 +37,17 @@ export function Footer() {
 
             <div className="relative px-6 py-10 sm:px-10 sm:py-12 text-center">
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
-                Join KAARSHE Updates
+                {newsletter?.title || "Join KAARSHE Updates"}
               </h2>
               <div className="mt-3 text-white/75 text-sm sm:text-base max-w-3xl mx-auto">
-                Subscribe to receive monthly updates on newly released research,
-                policy briefs, and economic insights directly to your inbox.
+                {newsletter?.description ||
+                  "Subscribe to receive monthly updates on newly released research, policy briefs, and economic insights directly to your inbox."}
               </div>
 
-              <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-center max-w-2xl mx-auto">
-                <div className="relative w-full sm:flex-1 sm:max-w-xl">
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    className="w-full rounded-xl bg-black/20 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent-burgundy/40"
-                    aria-label="Email"
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40">
-                    <Icon name="mail" size="sm" />
-                  </span>
-                </div>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="md"
-                  className="sm:self-stretch whitespace-nowrap cursor-pointer hover:bg-white/50"
-                >
-                  Sign up
-                </Button>
-              </div>
+              <FooterNewsletterFormClient
+                emailPlaceholder={newsletter?.emailPlaceholder || "Email"}
+                buttonLabel={newsletter?.buttonLabel || "Sign up"}
+              />
             </div>
           </div>
         </div>
@@ -55,7 +59,7 @@ export function Footer() {
               Quick Links
             </h5>
             <ul className="space-y-4 text-sm text-white/75">
-              {siteConfig.footer.quickLinks.map((link) => (
+              {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -74,7 +78,7 @@ export function Footer() {
               Resources
             </h5>
             <ul className="space-y-4 text-sm text-white/75">
-              {siteConfig.footer.resources.map((link) => (
+              {resources.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -93,7 +97,7 @@ export function Footer() {
               Legal
             </h5>
             <ul className="space-y-4 text-sm text-white/75">
-              {siteConfig.footer.legal.map((link) => (
+              {legal.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -110,11 +114,11 @@ export function Footer() {
         {/* Copyright */}
         <div className="pt-8 border-t border-white/5 flex flex-col gap-6 md:flex-row md:items-center md:justify-between text-center md:text-left">
           <div className="text-[13px] font-bold uppercase tracking-[0.2em] text-white/75">
-            © 2026 KAARSHE. All rights reserved.
+            {copyright ?? "© 2026 KAARSHE. All rights reserved."}
           </div>
           <div className="flex items-center justify-center md:justify-end gap-3">
             <a
-              href={siteConfig.social.linkedin}
+              href={socials.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               className="size-9 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
@@ -123,7 +127,7 @@ export function Footer() {
               <Icon name="linkedin" size="sm" />
             </a>
             <a
-              href={siteConfig.social.twitter}
+              href={socials.twitter}
               target="_blank"
               rel="noopener noreferrer"
               className="size-9 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
@@ -132,7 +136,7 @@ export function Footer() {
               <Icon name="x" size="sm" />
             </a>
             <a
-              href={siteConfig.social.facebook}
+              href={socials.facebook}
               target="_blank"
               rel="noopener noreferrer"
               className="size-9 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
@@ -141,7 +145,7 @@ export function Footer() {
               <Icon name="facebook" size="sm" />
             </a>
             <a
-              href={siteConfig.social.instagram}
+              href={socials.instagram}
               target="_blank"
               rel="noopener noreferrer"
               className="size-9 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"

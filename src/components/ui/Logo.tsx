@@ -10,6 +10,8 @@ interface LogoProps {
   className?: string;
   iconClassName?: string;
   textClassName?: string;
+  text?: string;
+  image?: { src: string; alt?: string } | null;
 }
 
 export function Logo({
@@ -18,13 +20,17 @@ export function Logo({
   className,
   iconClassName,
   textClassName,
+  text,
+  image,
 }: LogoProps) {
   const isDark = variant === "dark";
-  const logoImage = siteConfig.logo.image;
-  const mobileText = siteConfig.logo.text.toUpperCase();
-  const desktopText = siteConfig.logo.text.startsWith("K")
-    ? siteConfig.logo.text.slice(1)
-    : siteConfig.logo.text;
+  const resolvedText =
+    (text ?? siteConfig.logo.text).trim() || siteConfig.logo.text;
+  const logoImage = image ?? siteConfig.logo.image ?? null;
+  const mobileText = resolvedText.toUpperCase();
+  const desktopText = resolvedText.startsWith("K")
+    ? resolvedText.slice(1)
+    : resolvedText;
 
   return (
     <Link href="/" className={cn("flex items-center gap-3", className)}>
@@ -35,7 +41,7 @@ export function Logo({
           {logoImage?.src ? (
             <Image
               src={logoImage.src}
-              alt={logoImage.alt ?? siteConfig.logo.text}
+              alt={logoImage.alt ?? resolvedText}
               width={32}
               height={32}
               priority

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useId, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useId, useState, type FormEvent } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "./Button";
 import { Icon } from "./Icon";
 import { cn } from "@/lib/utils/cn";
@@ -8,6 +9,13 @@ import { cn } from "@/lib/utils/cn";
 interface NewsletterModalProps {
   enabled?: boolean;
   delayMs?: number;
+  onlyOnHome?: boolean;
+  title?: string;
+  description?: string;
+  emailPlaceholder?: string;
+  buttonLabel?: string;
+  successMessage?: string;
+  endpoint?: string;
 }
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -15,20 +23,33 @@ type Status = "idle" | "loading" | "success" | "error";
 export function NewsletterModal({
   enabled = true,
   delayMs = 800,
+  onlyOnHome = true,
+  title = "GET UPDATES",
+  description = "Subscribe to receive monthly updates on newly released research, policy briefs, and economic insights.",
+  emailPlaceholder = "you@example.com",
+  buttonLabel = "Subscribe",
+  successMessage = "Thank you for subscribing!",
+  endpoint = "/api/newsletter/subscribe",
 }: NewsletterModalProps) {
   const titleId = useId();
   const descriptionId = useId();
+  const pathname = usePathname();
 
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
 
+  const close = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
   useEffect(() => {
     if (!enabled) return;
+    if (onlyOnHome && pathname !== "/") return;
 
     const timer = window.setTimeout(() => setIsOpen(true), delayMs);
     return () => window.clearTimeout(timer);
-  }, [delayMs, enabled]);
+  }, [delayMs, enabled, onlyOnHome, pathname]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -36,7 +57,7 @@ export function NewsletterModal({
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        close("dismiss");
+        close();
       }
     };
 
@@ -49,38 +70,45 @@ export function NewsletterModal({
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+  }, [close, isOpen]);
 
-  const close = (_reason: "dismiss" | "subscribed") => {
-    setIsOpen(false);
-  };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!email.trim()) return;
 
     setStatus("loading");
 
-    // TODO: Replace with real API / WordPress integration later
-    window.setTimeout(() => {
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: "modal" }),
+      });
+
+      if (!res.ok) {
+        setStatus("error");
+        return;
+      }
+
       setStatus("success");
       setEmail("");
-      window.setTimeout(() => close("subscribed"), 900);
-    }, 900);
+      window.setTimeout(() => close(), 900);
+    } catch {
+      setStatus("error");
+    }
   };
 
   if (!enabled || !isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60]">
+    <div className="fixed inset-0 z-60">
       {/* Overlay */}
       <button
         type="button"
         aria-label="Close newsletter modal"
         className="absolute inset-0 bg-black/60"
-        onClick={() => close("dismiss")}
+        onClick={() => close()}
       />
 
       {/* Dialog */}
@@ -98,17 +126,16 @@ export function NewsletterModal({
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2 text-center">
               <h3 id={titleId} className="text-2xl font-black tracking-tight">
-                GET UPDATES
+                {title}
               </h3>
               <p id={descriptionId} className="text-sm text-primary/60">
-                Subscribe to receive monthly updates on newly released research,
-                policy briefs, and economic insights.
+                {description}
               </p>
             </div>
 
             <button
               type="button"
-              onClick={() => close("dismiss")}
+              onClick={() => close()}
               className="shrink-0 size-10 rounded-full border border-primary/10 hover:bg-primary/5 transition-colors inline-flex items-center justify-center"
               aria-label="Close"
             >
@@ -122,7 +149,7 @@ export function NewsletterModal({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder={emailPlaceholder}
                 className="w-full rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent-burgundy/20 focus:border-accent-burgundy transition-all"
                 required
                 disabled={status === "loading" || status === "success"}
@@ -138,13 +165,17 @@ export function NewsletterModal({
                 isLoading={status === "loading"}
                 disabled={status === "loading" || status === "success"}
               >
-                {status === "success" ? "Subscribed!" : "Subscribe"}
+                {status === "success" ? "Subscribed!" : buttonLabel}
               </Button>
             </div>
 
             {status === "success" ? (
               <p className="text-center text-sm text-accent-gold font-semibold">
-                Thank you for subscribing!
+                {successMessage}
+              </p>
+            ) : status === "error" ? (
+              <p className="text-center text-sm text-accent-burgundy font-semibold">
+                Subscription failed. Please try again.
               </p>
             ) : null}
           </form>

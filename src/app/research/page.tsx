@@ -1,147 +1,122 @@
-"use client";
-
-import { useState } from "react";
-import { Section } from "@/components/layout/Section";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { ResearchDocument } from "@/components/ui/ResearchDocument";
-import { Icon } from "@/components/ui/Icon";
-import { Pagination } from "@/components/ui/Pagination";
 import { researchPageContent } from "@/lib/constants";
+import type { ResearchDocument } from "@/lib/types/content";
+import {
+  type WpCptItem,
+  estimateReadTimeFromHtml,
+  formatWpDate,
+  getWpCptItems,
+  getWpPageBySlug,
+  pickFirstTermByTaxonomy,
+  stripHtml,
+} from "@/lib/wp";
+import { acfFileUrl, acfGet, acfString } from "@/lib/wpAcf";
+import { ResearchClient } from "./ResearchClient";
 
-export default function ResearchPage() {
-  const { hero, categories, documents } = researchPageContent;
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const documentsPerPage = 5;
+export default async function ResearchPage() {
+  const fallback = researchPageContent;
 
-  // Filter documents based on category and search
-  const filteredDocuments = documents.filter((doc) => {
-    const matchesCategory =
-      activeCategory === "all" || doc.category.toLowerCase() === activeCategory;
-    const matchesSearch =
-      doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.author.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const researchSlug = process.env.WORDPRESS_RESEARCH_PAGE_SLUG ?? "research";
+  const wpPage = await getWpPageBySlug(researchSlug);
+  const acf = wpPage?.acf;
 
-  // Pagination
-  const totalPages = Math.ceil(filteredDocuments.length / documentsPerPage);
-  const startIndex = (currentPage - 1) * documentsPerPage;
-  const paginatedDocuments = filteredDocuments.slice(
-    startIndex,
-    startIndex + documentsPerPage,
+  const hero = {
+    badge: acfString(acf, ["hero.badge", "hero_badge"], fallback.hero.badge),
+    title: acfString(acf, ["hero.title", "hero_title"], fallback.hero.title),
+    titleHighlight: acfString(
+      acf,
+      ["hero.title_highlight", "hero_title_highlight"],
+      fallback.hero.titleHighlight,
+    ),
+    description: acfString(
+      acf,
+      ["hero.description", "hero_description"],
+      fallback.hero.description,
+    ),
+    stats:
+      (acfGet<unknown>(acf, ["hero.stats", "hero_stats"], undefined) as
+        | Array<{ icon: string; label: string }>
+        | undefined) ?? fallback.hero.stats,
+  };
+
+  const researchPostType =
+    process.env.WORDPRESS_RESEARCH_POST_TYPE ?? "research";
+
+  let items: WpCptItem[] = [];
+  try {
+    const res = await getWpCptItems(researchPostType, {
+      perPage: 100,
+      page: 1,
+    });
+    items = res.items;
+  } catch {
+    // If CPT isn't enabled yet, keep the fallback static content for now.
+    items = [];
+  }
+
+  const documents: ResearchDocument[] =
+    items.length > 0
+      ? items.map((item) => {
+          const categoryTerm =
+            pickFirstTermByTaxonomy(item, "research_category") ??
+            pickFirstTermByTaxonomy(item, "category");
+
+          const category = categoryTerm?.name ?? "Research";
+          const categorySlug = categoryTerm?.slug ?? "research";
+
+          const categoryColor: "burgundy" | "blue" | "emerald" | undefined =
+            categorySlug === "economy"
+              ? "burgundy"
+              : categorySlug === "governance"
+                ? "blue"
+                : categorySlug === "society"
+                  ? "emerald"
+                  : undefined;
+
+          const readTime =
+            acfString(item.acf, ["read_time", "readTime"], "") ||
+            (item.content?.rendered
+              ? estimateReadTimeFromHtml(item.content.rendered)
+              : "5 min read");
+
+          const downloadUrl = acfFileUrl(
+            item.acf,
+            ["download_url", "downloadUrl", "pdf", "file"],
+            "",
+          );
+
+          return {
+            id: String(item.id),
+            title: stripHtml(item.title?.rendered ?? ""),
+            description: stripHtml(item.excerpt?.rendered ?? ""),
+            category,
+            categoryColor,
+            date: item.date ? formatWpDate(item.date) : "",
+            author: acfString(item.acf, ["author", "author_name"], "Kaarshe"),
+            readTime,
+            downloadUrl: downloadUrl || "#",
+          };
+        })
+      : fallback.documents;
+
+  const uniqueCategories = Array.from(
+    new Map(
+      documents
+        .map((d) => d.category)
+        .filter(Boolean)
+        .map((name) => [name.toLowerCase(), name] as const),
+    ).values(),
   );
 
+  const categories = [
+    { label: "All Fields", value: "all", active: true },
+    ...uniqueCategories.map((name) => ({
+      label: name,
+      value: name.toLowerCase(),
+      active: false,
+    })),
+  ];
+
   return (
-    <>
-      {/* Hero Section */}
-      <Section background="white" className="border-b border-neutral-100">
-        <div className="max-w-4xl mx-auto text-center">
-          <SectionHeading
-            badge={hero.badge}
-            title={
-              <>
-                {hero.title}{" "}
-                <span className="text-accent-burgundy">
-                  {hero.titleHighlight}
-                </span>
-              </>
-            }
-            description={hero.description}
-            align="center"
-          />
-          <div className="flex flex-wrap gap-3 mt-8 justify-center">
-            {hero.stats.map((stat, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-2 text-sm font-semibold text-neutral-600 bg-white border border-neutral-200 rounded-full px-4 py-2"
-              >
-                <Icon
-                  name={stat.icon}
-                  size="sm"
-                  className="text-accent-burgundy"
-                />
-                <span>{stat.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      {/* Search & Filter Controls */}
-      <div className="sticky top-18.25 z-40 bg-background-light py-6 border-b border-neutral-200">
-        <div className="max-w-7xl mx-auto px-6 lg:px-20">
-          <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
-            {/* Search Bar */}
-            <div className="relative w-full lg:max-w-md">
-              <Icon
-                name="search"
-                size="sm"
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
-              />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search papers, authors, or keywords..."
-                className="w-full bg-white border border-neutral-300 rounded-lg py-3 pl-12 pr-4 focus:ring-1 focus:ring-accent-burgundy focus:border-accent-burgundy outline-none transition-all placeholder:text-neutral-400 text-sm"
-              />
-            </div>
-
-            {/* Category Filters */}
-            <div className="flex items-center gap-2 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
-              <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider mr-2">
-                Filter by:
-              </span>
-              {categories.map((category) => (
-                <button
-                  key={category.value}
-                  onClick={() => {
-                    setActiveCategory(category.value);
-                    setCurrentPage(1);
-                  }}
-                  className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    activeCategory === category.value
-                      ? "bg-primary text-white"
-                      : "bg-white border border-neutral-200 text-neutral-600 hover:border-accent-burgundy hover:text-accent-burgundy"
-                  }`}
-                >
-                  {category.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Document List */}
-      <Section>
-        <div className="flex flex-col gap-1">
-          {paginatedDocuments.map((doc) => (
-            <ResearchDocument key={doc.id} {...doc} />
-          ))}
-        </div>
-
-        {/* Pagination */}
-        {filteredDocuments.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        )}
-
-        {/* No Results */}
-        {filteredDocuments.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-neutral-500">
-              No documents found matching your criteria.
-            </p>
-          </div>
-        )}
-      </Section>
-    </>
+    <ResearchClient hero={hero} categories={categories} documents={documents} />
   );
 }

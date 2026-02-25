@@ -10,7 +10,20 @@ import { Logo } from "@/components/ui/Logo";
 import { Icon } from "@/components/ui/Icon";
 import { Container } from "./Container";
 
-export function Header() {
+type HeaderLink = { label: string; href: string };
+
+export function Header({
+  navItems = navigation,
+  cta = { label: "Contact", href: "/contact" },
+  branding,
+}: {
+  navItems?: HeaderLink[];
+  cta?: { label: string; href: string };
+  branding?: {
+    logoText?: string;
+    logoImage?: { src: string; alt?: string } | null;
+  };
+}) {
   const [menu, setMenu] = useState({ isOpen: false, openedOnPathname: "" });
   const pathname = usePathname();
 
@@ -35,11 +48,15 @@ export function Header() {
     >
       <Container>
         <nav className="flex items-center justify-between py-6">
-          <Logo variant="dark" />
+          <Logo
+            variant="dark"
+            text={branding?.logoText}
+            image={branding?.logoImage ?? null}
+          />
 
           {/* Desktop Navigation */}
           <ul className="hidden md:flex items-center gap-10">
-            {navigation.map((item) => (
+            {navItems.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -58,8 +75,8 @@ export function Header() {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <Button href="/contact" size="md">
-              Contact
+            <Button href={cta.href} size="md">
+              {cta.label}
             </Button>
           </div>
 
@@ -77,7 +94,7 @@ export function Header() {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-primary/5">
             <ul className="flex flex-col space-y-4">
-              {navigation.map((item) => (
+              {navItems.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -95,12 +112,12 @@ export function Header() {
               ))}
               <li className="pt-2">
                 <Button
-                  href="/contact"
+                  href={cta.href}
                   size="sm"
                   className="w-full"
                   onClick={closeMenu}
                 >
-                  Contact
+                  {cta.label}
                 </Button>
               </li>
             </ul>
