@@ -203,7 +203,7 @@ Stores a newsletter signup. By default this endpoint attempts to create a WordPr
 └── package.json
 ```
 
----
+<!-- ---
 
 ## Screenshots
 
@@ -215,9 +215,9 @@ Add screenshots under `docs/screenshots/` and link them here.
 ![Single Post](docs/screenshots/post.png)
 ```
 
----
+--- -->
 
-## Future Improvements
+<!-- ## Future Improvements
 
 - Add automated tests (unit + integration) for WordPress fetching, ACF parsing, and API routes
 - Add spam protection + rate limiting for newsletter signup
@@ -237,13 +237,13 @@ Contributions are welcome.
 4. Push the branch (`git push origin feature/my-change`)
 5. Open a Pull Request
 
----
+--- -->
 
-## License
+<!-- ## License
 
 No license file is included yet. If you want this to be open source, add a `LICENSE` file (MIT is a common choice).
 
----
+--- -->
 
 ## Author
 
