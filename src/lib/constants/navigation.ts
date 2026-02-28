@@ -10,6 +10,7 @@ export const navigation: NavItem[] = [
   { label: 'Vision', href: '/vision' },
   { label: 'Blog', href: '/blog' },
   { label: 'Research', href: '/research' },
+  { label: 'Book Speaking', href: '/book-speaking' },
   // { label: 'Publications', href: '/publications' },
 ]
 
