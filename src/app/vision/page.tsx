@@ -89,22 +89,25 @@ export default async function VisionPage({
                 <Icon
                   name={
                     pillar.icon ??
-                    fallback.pillars[index]?.icon ??
+                    visionPageContent.pillars[index]?.icon ??
                     "trending_up"
                   }
                   size="xl"
                 />
               </div>
               <h3 className="text-accent-burgundy text-xl font-bold mb-4">
-                {pillar.title ?? fallback.pillars[index]?.title ?? ""}
+                {pillar.title ?? visionPageContent.pillars[index]?.title ?? ""}
               </h3>
               <p className="text-gray-600 text-sm leading-relaxed mb-6">
                 {pillar.description ??
-                  fallback.pillars[index]?.description ??
+                  visionPageContent.pillars[index]?.description ??
                   ""}
               </p>
               <ul className="space-y-2 text-sm text-gray-700">
-                {(pillar.points ?? fallback.pillars[index]?.points ?? []).map(
+                {(pillar.points ??
+                  visionPageContent.pillars[index]?.points ??
+                  []
+                ).map(
                   (point, idx) => (
                     <li key={idx} className="flex items-center gap-2">
                       <Icon

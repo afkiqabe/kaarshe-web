@@ -78,22 +78,22 @@ export default async function HomePage() {
               key={index}
               icon={
                 policy.icon ??
-                fallback.policyHighlights.policies[index]?.icon ??
+                homePageContent.policyHighlights.policies[index]?.icon ??
                 "insights"
               }
               title={
                 policy.title ??
-                fallback.policyHighlights.policies[index]?.title ??
+                homePageContent.policyHighlights.policies[index]?.title ??
                 ""
               }
               description={
                 policy.description ??
-                fallback.policyHighlights.policies[index]?.description ??
+                homePageContent.policyHighlights.policies[index]?.description ??
                 ""
               }
               points={
                 policy.points ??
-                fallback.policyHighlights.policies[index]?.points ??
+                homePageContent.policyHighlights.policies[index]?.points ??
                 []
               }
             />
