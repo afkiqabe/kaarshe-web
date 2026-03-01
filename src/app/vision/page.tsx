@@ -104,21 +104,20 @@ export default async function VisionPage({
                   ""}
               </p>
               <ul className="space-y-2 text-sm text-gray-700">
-                {(pillar.points ??
+                {(
+                  pillar.points ??
                   visionPageContent.pillars[index]?.points ??
                   []
-                ).map(
-                  (point, idx) => (
-                    <li key={idx} className="flex items-center gap-2">
-                      <Icon
-                        name="check_circle"
-                        className="text-accent-gold"
-                        size="sm"
-                      />
-                      {point}
-                    </li>
-                  ),
-                )}
+                ).map((point, idx) => (
+                  <li key={idx} className="flex items-center gap-2">
+                    <Icon
+                      name="check_circle"
+                      className="text-accent-gold"
+                      size="sm"
+                    />
+                    {point}
+                  </li>
+                ))}
               </ul>
             </div>
           ))}
