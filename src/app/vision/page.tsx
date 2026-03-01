@@ -4,8 +4,6 @@ import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import Link from "next/link";
 import { visionPageContent } from "@/lib/constants";
-import { getWpPageBySlug } from "@/lib/wp";
-import { acfGet, acfString, coerceStringList } from "@/lib/wpAcf";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -14,73 +12,10 @@ export default async function VisionPage({
 }: {
   searchParams?: Promise<SearchParams>;
 }) {
-  const fallback = visionPageContent;
-  const visionSlug = process.env.WORDPRESS_VISION_PAGE_SLUG ?? "vision";
-  const wpPage = await getWpPageBySlug(visionSlug);
-  const acf = wpPage?.acf;
-
-  const hero = {
-    title: acfString(acf, ["hero.title", "hero_title"], fallback.hero.title),
-    titleHighlight: acfString(
-      acf,
-      ["hero.title_highlight", "hero_title_highlight"],
-      fallback.hero.titleHighlight,
-    ),
-    description: acfString(
-      acf,
-      ["hero.description", "hero_description"],
-      fallback.hero.description,
-    ),
-  };
-
-  const pillars = (
-    (acfGet<unknown>(acf, ["pillars", "policy_pillars"], undefined) as
-      | Array<{
-          icon?: string;
-          title?: string;
-          description?: string;
-          points?: unknown;
-        }>
-      | undefined) ?? fallback.pillars
-  ).map((pillar, index) => ({
-    ...pillar,
-    points:
-      coerceStringList(pillar.points, {
-        keys: ["text", "point", "value", "label"],
-      }) ??
-      fallback.pillars[index]?.points ??
-      [],
-  }));
-
-  const quote = {
-    text: acfString(acf, ["quote.text", "quote_text"], fallback.quote.text),
-    author: acfString(
-      acf,
-      ["quote.author", "quote_author"],
-      fallback.quote.author,
-    ),
-    title: acfString(acf, ["quote.title", "quote_title"], fallback.quote.title),
-  };
-
-  const strategies = (
-    (acfGet<unknown>(acf, ["strategies", "topics"], undefined) as
-      | Array<{
-          id?: string;
-          title?: string;
-          description?: string;
-          image?: unknown;
-          objectives?: unknown;
-        }>
-      | undefined) ?? fallback.strategies
-  ).map((strategy, index) => ({
-    ...strategy,
-    objectives:
-      coerceStringList(strategy.objectives, {
-        keys: ["text", "objective", "value", "label"],
-      }) ??
-      fallback.strategies[index]?.objectives ??
-      [],
-  }));
+  const hero = visionPageContent.hero;
+  const pillars = visionPageContent.pillars;
+  const quote = visionPageContent.quote;
+  const strategies = visionPageContent.strategies;
   const resolvedSearchParams = (await searchParams) ?? {};
   const activeTopic =
     typeof resolvedSearchParams.topic === "string"
@@ -89,34 +24,10 @@ export default async function VisionPage({
   const activeStrategy =
     strategies.find((strategy) => strategy.id === activeTopic) ?? strategies[0];
 
-  const activeImage = (() => {
-    const raw = activeStrategy?.image;
-
-    if (typeof raw === "string" && raw) {
-      return { src: raw, alt: activeStrategy?.title ?? "" };
-    }
-
-    if (typeof raw === "object" && raw !== null) {
-      const record = raw as Record<string, unknown>;
-      const src =
-        (typeof record.url === "string" && record.url) ||
-        (typeof record.src === "string" && record.src) ||
-        "";
-      const alt =
-        (typeof record.alt === "string" && record.alt) ||
-        activeStrategy?.title ||
-        "";
-      if (src) return { src, alt };
-    }
-
-    const fallbackMatch = fallback.strategies.find(
-      (s) => s.id === activeStrategy?.id,
-    );
-    return {
-      src: fallbackMatch?.image ?? fallback.strategies[0]?.image ?? "",
-      alt: activeStrategy?.title ?? fallbackMatch?.title ?? "",
-    };
-  })();
+  const activeImage = {
+    src: activeStrategy?.image ?? visionPageContent.strategies[0]?.image ?? "",
+    alt: activeStrategy?.title ?? "",
+  };
 
   const getMenuItemClassName = (isActive: boolean) =>
     isActive

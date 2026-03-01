@@ -342,6 +342,24 @@ body {
   margin-bottom: 1.5rem;
 }
 
+.article-content ul,
+.article-content ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.article-content ul {
+  list-style-type: disc;
+}
+
+.article-content ol {
+  list-style-type: decimal;
+}
+
+.article-content li {
+  margin-bottom: 0.5rem;
+}
+
 .article-content h2 {
   font-family: var(--font-serif);
   font-size: 2rem;
@@ -367,15 +385,6 @@ body {
   font-size: 1.5rem;
   font-style: italic;
   color: #6b1f2a;
-}
-
-.article-content p:first-of-type::first-letter {
-  font-size: 4rem;
-  font-family: var(--font-serif);
-  float: left;
-  margin-right: 0.5rem;
-  margin-top: 0.25rem;
-  color: #1f1f1f;
 }
 
 .material-symbols-outlined {

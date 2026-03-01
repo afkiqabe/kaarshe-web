@@ -14,7 +14,7 @@ export function FooterNewsletterFormClient({
   buttonLabel: string;
 }) {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<Status>("idle");
+  const [status, setStatus] = useState<Status | "duplicate">("idle");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,7 +30,11 @@ export function FooterNewsletterFormClient({
       });
 
       if (!res.ok) {
-        setStatus("error");
+        if (res.status === 409) {
+          setStatus("duplicate");
+        } else {
+          setStatus("error");
+        }
         return;
       }
 
@@ -45,37 +49,43 @@ export function FooterNewsletterFormClient({
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-6 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-center max-w-2xl mx-auto"
+      className="mt-6 max-w-2xl mx-auto space-y-2"
     >
-      <div className="relative w-full sm:flex-1 sm:max-w-xl">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder={emailPlaceholder}
-          className="w-full rounded-xl bg-black/20 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent-burgundy/40"
-          aria-label="Email"
+      <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-center">
+        <div className="relative w-full sm:flex-1 sm:max-w-xl">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={emailPlaceholder}
+            className="w-full rounded-xl bg-black/20 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent-burgundy/40"
+            aria-label="Email"
+            disabled={status === "loading" || status === "success"}
+            required
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40">
+            <Icon name="mail" size="sm" />
+          </span>
+        </div>
+        <Button
+          type="submit"
+          variant="secondary"
+          size="md"
+          className="sm:self-stretch whitespace-nowrap cursor-pointer hover:bg-white/50"
+          isLoading={status === "loading"}
           disabled={status === "loading" || status === "success"}
-          required
-        />
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40">
-          <Icon name="mail" size="sm" />
-        </span>
+        >
+          {status === "success" ? "Subscribed!" : buttonLabel}
+        </Button>
       </div>
-      <Button
-        type="submit"
-        variant="secondary"
-        size="md"
-        className="sm:self-stretch whitespace-nowrap cursor-pointer hover:bg-white/50"
-        isLoading={status === "loading"}
-        disabled={status === "loading" || status === "success"}
-      >
-        {status === "success" ? "Subscribed!" : buttonLabel}
-      </Button>
 
       {status === "error" ? (
-        <p className="text-xs text-accent-gold sm:basis-full sm:text-center">
+        <p className="text-xs text-accent-gold text-center">
           Subscription failed. Try again.
+        </p>
+      ) : status === "duplicate" ? (
+        <p className="text-xs text-accent-gold text-center">
+          This email is already subscribed.
         </p>
       ) : null}
     </form>

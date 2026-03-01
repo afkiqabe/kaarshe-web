@@ -37,7 +37,7 @@ export function NewsletterModal({
 
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<Status>("idle");
+  const [status, setStatus] = useState<Status | "duplicate">("idle");
 
   const close = useCallback(() => {
     setIsOpen(false);
@@ -87,7 +87,11 @@ export function NewsletterModal({
       });
 
       if (!res.ok) {
-        setStatus("error");
+        if (res.status === 409) {
+          setStatus("duplicate");
+        } else {
+          setStatus("error");
+        }
         return;
       }
 
@@ -168,10 +172,13 @@ export function NewsletterModal({
                 {status === "success" ? "Subscribed!" : buttonLabel}
               </Button>
             </div>
-
             {status === "success" ? (
               <p className="text-center text-sm text-accent-gold font-semibold">
                 {successMessage}
+              </p>
+            ) : status === "duplicate" ? (
+              <p className="text-center text-sm text-accent-gold font-semibold">
+                This email is already subscribed.
               </p>
             ) : status === "error" ? (
               <p className="text-center text-sm text-accent-burgundy font-semibold">

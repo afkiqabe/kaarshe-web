@@ -51,6 +51,7 @@ export type WpCptItem = {
   excerpt?: WpRendered;
   content?: WpRendered;
   date?: string;
+  meta?: Record<string, unknown>;
   _embedded?: {
     author?: WpAuthor[];
     "wp:featuredmedia"?: WpMedia[];
@@ -208,6 +209,9 @@ export async function getWpCptItems(
     {
       per_page: perPage,
       page,
+      // ACF: request standard formatting when available so fields
+      // are exposed consistently under the `acf` key.
+      acf_format: "standard",
       _embed: true,
     },
     { revalidate: 60, tag: `wp:cpt:${postType}` },

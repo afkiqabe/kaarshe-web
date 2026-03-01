@@ -103,13 +103,37 @@ export function BookSpeakingClient({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    if (isSubmitting) return;
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setIsSubmitting(true);
+    setSubmitStatus("idle");
+
+    try {
+      const res = await fetch("/api/book-speaking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        setSubmitStatus("error");
+        return;
+      }
+
       setSubmitStatus("success");
+      setFormData({
+        organization: "",
+        email: "",
+        date: "",
+        format: initialFormat,
+        notes: "",
+      });
       setTimeout(() => setSubmitStatus("idle"), 3500);
-    }, 900);
+    } catch {
+      setSubmitStatus("error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -325,6 +349,16 @@ export function BookSpeakingClient({
                       ? request.successLabel
                       : request.submitLabel}
                   </Button>
+                  {submitStatus === "success" && (
+                    <p className="mt-3 text-sm text-accent-gold">
+                      Thank you, your request has been received.
+                    </p>
+                  )}
+                  {submitStatus === "error" && (
+                    <p className="mt-3 text-sm text-accent-burgundy">
+                      Something went wrong. Please try again.
+                    </p>
+                  )}
                 </form>
               </div>
             </div>

@@ -6,132 +6,21 @@ import { Icon } from "@/components/ui/Icon";
 import { homePageContent } from "@/lib/constants";
 import {
   formatWpDate,
-  getWpPageBySlug,
   getWpPosts,
   pickFeaturedImageUrl,
   pickPrimaryCategory,
   stripHtml,
 } from "@/lib/wp";
-import { acfGet, acfImage, acfString, coerceStringList } from "@/lib/wpAcf";
 
 export default async function HomePage() {
-  const fallback = homePageContent;
-
-  const homeSlug = process.env.WORDPRESS_HOME_PAGE_SLUG ?? "home";
-  const wpPage = await getWpPageBySlug(homeSlug);
-  const acf = wpPage?.acf;
-
-  const hero = {
-    title: acfString(acf, ["hero.title", "hero_title"], fallback.hero.title),
-    titleHighlight: acfString(
-      acf,
-      ["hero.title_highlight", "hero_title_highlight"],
-      fallback.hero.titleHighlight,
-    ),
-    titleSuffix: acfString(
-      acf,
-      ["hero.title_suffix", "hero_title_suffix"],
-      fallback.hero.titleSuffix,
-    ),
-    titleHighlight2: acfString(
-      acf,
-      ["hero.title_highlight_2", "hero_title_highlight_2"],
-      fallback.hero.titleHighlight2,
-    ),
-    description: acfString(
-      acf,
-      ["hero.description", "hero_description"],
-      fallback.hero.description,
-    ),
-    cta: {
-      primary: {
-        label: acfString(
-          acf,
-          ["hero.cta_primary_label", "cta_primary_label"],
-          fallback.hero.cta.primary.label,
-        ),
-        href: acfString(
-          acf,
-          ["hero.cta_primary_href", "cta_primary_href"],
-          fallback.hero.cta.primary.href,
-        ),
-        icon: acfString(
-          acf,
-          ["hero.cta_primary_icon", "cta_primary_icon"],
-          fallback.hero.cta.primary.icon,
-        ),
-      },
-      secondary: {
-        label: acfString(
-          acf,
-          ["hero.cta_secondary_label", "cta_secondary_label"],
-          fallback.hero.cta.secondary.label,
-        ),
-        href: acfString(
-          acf,
-          ["hero.cta_secondary_href", "cta_secondary_href"],
-          fallback.hero.cta.secondary.href,
-        ),
-      },
-    },
-    image: acfImage(acf, ["hero.image", "hero_image"], fallback.hero.image),
-  };
-
-  const mission = {
-    quote: acfString(
-      acf,
-      ["mission.quote_icon", "mission_quote_icon"],
-      fallback.mission.quote,
-    ),
-    text: acfString(
-      acf,
-      ["mission.text", "mission_text"],
-      fallback.mission.text,
-    ),
-  };
-
-  const policyHighlights = {
-    title: acfString(
-      acf,
-      ["policy_highlights.title", "policy_highlights_title"],
-      fallback.policyHighlights.title,
-    ),
-    policies: (
-      (acfGet<unknown>(
-        acf,
-        ["policy_highlights.policies", "policies"],
-        undefined,
-      ) as
-        | Array<{
-            icon?: string;
-            title?: string;
-            description?: string;
-            points?: unknown;
-          }>
-        | undefined) ?? fallback.policyHighlights.policies
-    ).map((policy, index) => ({
-      ...policy,
-      points:
-        coerceStringList(policy.points, {
-          keys: ["text", "point", "value", "label"],
-        }) ??
-        fallback.policyHighlights.policies[index]?.points ??
-        [],
-    })),
-  };
+  const hero = homePageContent.hero;
+  const mission = homePageContent.mission;
+  const policyHighlights = homePageContent.policyHighlights;
 
   const latest = await getWpPosts({ perPage: 3, page: 1 });
   const insights = {
-    badge: acfString(
-      acf,
-      ["insights.badge", "insights_badge"],
-      fallback.insights.badge,
-    ),
-    title: acfString(
-      acf,
-      ["insights.title", "insights_title"],
-      fallback.insights.title,
-    ),
+    badge: homePageContent.insights.badge,
+    title: homePageContent.insights.title,
     posts: latest.posts.map((post) => ({
       id: String(post.id),
       category: pickPrimaryCategory(post)?.name ?? "Insights",

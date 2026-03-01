@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Section } from "@/components/layout/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ResearchDocument as ResearchDocumentRow } from "@/components/ui/ResearchDocument";
@@ -28,8 +28,34 @@ export function ResearchClient({
   const [currentPage, setCurrentPage] = useState(1);
   const documentsPerPage = 5;
 
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem("kaarshe:saved-research");
+      if (raw) {
+        const parsed = JSON.parse(raw) as string[];
+        if (Array.isArray(parsed)) {
+          setSavedIds(parsed);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const documentsWithSaved = useMemo(
+    () =>
+      documents.map((doc) => ({
+        ...doc,
+        isSaved: savedIds.includes(doc.id),
+      })),
+    [documents, savedIds],
+  );
+
   const filteredDocuments = useMemo(() => {
-    return documents.filter((doc) => {
+    const base = documentsWithSaved.filter((doc) => {
       const matchesCategory =
         activeCategory === "all" ||
         doc.category.toLowerCase() === activeCategory.toLowerCase();
@@ -42,7 +68,28 @@ export function ResearchClient({
 
       return matchesCategory && matchesSearch;
     });
-  }, [activeCategory, documents, searchQuery]);
+
+    // Saved documents should appear first for the user
+    return base.sort((a, b) => Number(b.isSaved) - Number(a.isSaved));
+  }, [activeCategory, documentsWithSaved, searchQuery]);
+
+  const toggleSave = (id: string) => {
+    setSavedIds((prev) => {
+      const exists = prev.includes(id);
+      const next = exists ? prev.filter((item) => item !== id) : [id, ...prev];
+      if (typeof window !== "undefined") {
+        try {
+          window.localStorage.setItem(
+            "kaarshe:saved-research",
+            JSON.stringify(next),
+          );
+        } catch {
+          // ignore
+        }
+      }
+      return next;
+    });
+  };
 
   const totalPages = Math.ceil(filteredDocuments.length / documentsPerPage);
   const startIndex = (currentPage - 1) * documentsPerPage;
@@ -140,7 +187,12 @@ export function ResearchClient({
       <Section>
         <div className="flex flex-col gap-1">
           {paginatedDocuments.map((doc) => (
-            <ResearchDocumentRow key={doc.id} {...doc} />
+            <ResearchDocumentRow
+              key={doc.id}
+              {...doc}
+              isSaved={doc.isSaved}
+              onToggleSave={() => toggleSave(doc.id)}
+            />
           ))}
         </div>
 

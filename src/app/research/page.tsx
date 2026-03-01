@@ -5,57 +5,39 @@ import {
   estimateReadTimeFromHtml,
   formatWpDate,
   getWpCptItems,
-  getWpPageBySlug,
   pickFirstTermByTaxonomy,
   stripHtml,
 } from "@/lib/wp";
-import { acfFileUrl, acfGet, acfString } from "@/lib/wpAcf";
+import { acfFileUrl, acfString } from "@/lib/wpAcf";
 import { ResearchClient } from "./ResearchClient";
 
 export default async function ResearchPage() {
   const fallback = researchPageContent;
-
-  const researchSlug = process.env.WORDPRESS_RESEARCH_PAGE_SLUG ?? "research";
-  const wpPage = await getWpPageBySlug(researchSlug);
-  const acf = wpPage?.acf;
-
-  const hero = {
-    badge: acfString(acf, ["hero.badge", "hero_badge"], fallback.hero.badge),
-    title: acfString(acf, ["hero.title", "hero_title"], fallback.hero.title),
-    titleHighlight: acfString(
-      acf,
-      ["hero.title_highlight", "hero_title_highlight"],
-      fallback.hero.titleHighlight,
-    ),
-    description: acfString(
-      acf,
-      ["hero.description", "hero_description"],
-      fallback.hero.description,
-    ),
-    stats:
-      (acfGet<unknown>(acf, ["hero.stats", "hero_stats"], undefined) as
-        | Array<{ icon: string; label: string }>
-        | undefined) ?? fallback.hero.stats,
-  };
+  const heroFallback = fallback.hero;
 
   const researchPostType =
     process.env.WORDPRESS_RESEARCH_POST_TYPE ?? "research";
 
   let items: WpCptItem[] = [];
+  let totalFromApi: number | null = null;
   try {
     const res = await getWpCptItems(researchPostType, {
       perPage: 100,
       page: 1,
     });
     items = res.items;
+    totalFromApi = res.total;
   } catch {
     // If CPT isn't enabled yet, keep the fallback static content for now.
     items = [];
+    totalFromApi = null;
   }
 
   const documents: ResearchDocument[] =
     items.length > 0
       ? items.map((item) => {
+          const acfSource = item.acf ?? (item as any).meta;
+
           const categoryTerm =
             pickFirstTermByTaxonomy(item, "research_category") ??
             pickFirstTermByTaxonomy(item, "category");
@@ -73,13 +55,13 @@ export default async function ResearchPage() {
                   : undefined;
 
           const readTime =
-            acfString(item.acf, ["read_time", "readTime"], "") ||
+            acfString(acfSource, ["read_time", "readTime"], "") ||
             (item.content?.rendered
               ? estimateReadTimeFromHtml(item.content.rendered)
               : "5 min read");
 
           const downloadUrl = acfFileUrl(
-            item.acf,
+            acfSource,
             ["download_url", "downloadUrl", "pdf", "file"],
             "",
           );
@@ -91,12 +73,29 @@ export default async function ResearchPage() {
             category,
             categoryColor,
             date: item.date ? formatWpDate(item.date) : "",
-            author: acfString(item.acf, ["author", "author_name"], "Kaarshe"),
+            author:
+              acfString(acfSource, ["author", "author_name"], "") ||
+              item._embedded?.author?.[0]?.name ||
+              "Kaarshe",
             readTime,
             downloadUrl: downloadUrl || "#",
           };
         })
       : fallback.documents;
+
+  const documentCount = totalFromApi ?? documents.length;
+
+  const hero = {
+    ...heroFallback,
+    stats: heroFallback.stats.map((stat, index) =>
+      index === 0 && documentCount > 0
+        ? {
+            ...stat,
+            label: `${documentCount.toLocaleString()} Document${documentCount === 1 ? "" : "s"}`,
+          }
+        : stat,
+    ),
+  };
 
   const uniqueCategories = Array.from(
     new Map(

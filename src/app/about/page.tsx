@@ -4,73 +4,12 @@ import { MilestoneCard } from "@/components/ui/MilestoneCard";
 import { Button } from "@/components/ui/Button";
 import Image from "next/image";
 import { aboutPageContent } from "@/lib/constants";
-import { getWpPageBySlug } from "@/lib/wp";
-import { acfGet, acfImage, acfString, acfStringArray } from "@/lib/wpAcf";
 
-export default async function AboutPage() {
-  const fallback = aboutPageContent;
-  const aboutSlug = process.env.WORDPRESS_ABOUT_PAGE_SLUG ?? "about";
-  const wpPage = await getWpPageBySlug(aboutSlug);
-  const acf = wpPage?.acf;
-
-  const hero = {
-    badge: acfString(acf, ["hero.badge", "hero_badge"], fallback.hero.badge),
-    title: acfString(acf, ["hero.title", "hero_title"], fallback.hero.title),
-    description: acfString(
-      acf,
-      ["hero.description", "hero_description"],
-      fallback.hero.description,
-    ),
-    stats: {
-      years: acfString(
-        acf,
-        ["hero.stats.years", "hero_years"],
-        fallback.hero.stats.years,
-      ),
-      label: acfString(
-        acf,
-        ["hero.stats.label", "hero_years_label"],
-        fallback.hero.stats.label,
-      ),
-    },
-    image: acfImage(acf, ["hero.image", "hero_image"], fallback.hero.image)!,
-  };
-
-  const biography = {
-    quote: acfString(
-      acf,
-      ["biography.quote", "bio_quote"],
-      fallback.biography.quote,
-    ),
-    paragraphs: acfStringArray(
-      acf,
-      ["biography.paragraphs", "bio_paragraphs"],
-      fallback.biography.paragraphs,
-    ),
-  };
-
-  const valuesRaw = acfGet<unknown>(acf, ["values", "core_values"], undefined);
-  const values = Array.isArray(valuesRaw)
-    ? (valuesRaw as Array<{
-        icon?: string;
-        title?: string;
-        description?: string;
-      }>)
-    : fallback.values;
-
-  const milestonesRaw = acfGet<unknown>(
-    acf,
-    ["milestones", "timeline"],
-    undefined,
-  );
-  const milestones = Array.isArray(milestonesRaw)
-    ? (milestonesRaw as Array<{
-        year?: string;
-        title?: string;
-        description?: string;
-        icon?: string;
-      }>)
-    : fallback.milestones;
+export default function AboutPage() {
+  const hero = aboutPageContent.hero;
+  const biography = aboutPageContent.biography;
+  const values = aboutPageContent.values;
+  const milestones = aboutPageContent.milestones;
 
   return (
     <>
@@ -151,20 +90,12 @@ export default async function AboutPage() {
                     className="flex flex-col gap-4 text-center items-center"
                   >
                     <Icon
-                      name={
-                        value.icon ??
-                        fallback.values[index]?.icon ??
-                        "verified_user"
-                      }
+                      name={value.icon ?? "verified_user"}
                       className="text-4xl text-primary/40"
                     />
-                    <h4 className="font-bold text-xl">
-                      {value.title ?? fallback.values[index]?.title ?? ""}
-                    </h4>
+                    <h4 className="font-bold text-xl">{value.title}</h4>
                     <p className="text-sm text-primary/70 leading-relaxed">
-                      {value.description ??
-                        fallback.values[index]?.description ??
-                        ""}
+                      {value.description}
                     </p>
                   </div>
                 ))}
@@ -189,16 +120,10 @@ export default async function AboutPage() {
           {milestones.map((milestone, index) => (
             <MilestoneCard
               key={index}
-              year={milestone.year ?? fallback.milestones[index]?.year ?? ""}
-              title={milestone.title ?? fallback.milestones[index]?.title ?? ""}
-              description={
-                milestone.description ??
-                fallback.milestones[index]?.description ??
-                ""
-              }
-              icon={
-                milestone.icon ?? fallback.milestones[index]?.icon ?? "school"
-              }
+              year={milestone.year}
+              title={milestone.title}
+              description={milestone.description}
+              icon={milestone.icon ?? "school"}
             />
           ))}
         </div>

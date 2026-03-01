@@ -37,7 +37,7 @@ export function Footer({
 
             <div className="relative px-6 py-10 sm:px-10 sm:py-12 text-center">
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
-                {newsletter?.title || "Join KAARSHE Updates"}
+                {newsletter?.title || "Get KAARSHE Updates"}
               </h2>
               <div className="mt-3 text-white/75 text-sm sm:text-base max-w-3xl mx-auto">
                 {newsletter?.description ||

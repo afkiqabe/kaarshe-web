@@ -48,13 +48,38 @@ export function ContactClient({ content }: { content: ContactPageModel }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setSubmitStatus("idle");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        setSubmitStatus("error");
+        return;
+      }
+
       setSubmitStatus("success");
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        subject: "general",
+        message: "",
+      });
       setTimeout(() => setSubmitStatus("idle"), 3000);
-    }, 1000);
+    } catch {
+      setSubmitStatus("error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -204,6 +229,16 @@ export function ContactClient({ content }: { content: ContactPageModel }) {
                   <Icon name="send" size="sm" className="ml-2" />
                 )}
               </Button>
+              {submitStatus === "success" && (
+                <p className="mt-3 text-sm text-accent-gold">
+                  Thank you, your message has been sent.
+                </p>
+              )}
+              {submitStatus === "error" && (
+                <p className="mt-3 text-sm text-accent-burgundy">
+                  Something went wrong. Please try again.
+                </p>
+              )}
             </form>
           </div>
 

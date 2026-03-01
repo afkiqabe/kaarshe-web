@@ -43,7 +43,7 @@ export function Newsletter({
 }: NewsletterProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
+    "idle" | "loading" | "success" | "error" | "duplicate"
   >("idle");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,7 +61,11 @@ export function Newsletter({
       });
 
       if (!res.ok) {
-        setStatus("error");
+        if (res.status === 409) {
+          setStatus("duplicate");
+        } else {
+          setStatus("error");
+        }
         return;
       }
 
@@ -111,6 +115,11 @@ export function Newsletter({
         {status === "success" && (
           <p className="mt-4 text-sm text-accent-gold">
             Thank you for subscribing!
+          </p>
+        )}
+        {status === "duplicate" && (
+          <p className="mt-4 text-sm text-accent-gold">
+            This email is already subscribed to the newsletter.
           </p>
         )}
         {status === "error" && (

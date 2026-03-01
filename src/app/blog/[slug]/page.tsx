@@ -1,6 +1,7 @@
 import { Section } from "@/components/layout/Section";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Icon } from "@/components/ui/Icon";
+import { ShareButtons } from "@/components/ui/ShareButtons";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -15,13 +16,15 @@ import {
   pickTags,
   stripHtml,
 } from "@/lib/wp";
+import { siteConfig } from "@/lib/constants/site";
 
 export default async function BlogPostPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const post = await getWpPostBySlug(params.slug);
+  const { slug } = await params;
+  const post = await getWpPostBySlug(slug);
 
   if (!post) notFound();
 
@@ -35,6 +38,8 @@ export default async function BlogPostPage({
   const featuredImage = pickFeaturedImageUrl(post);
   const featuredAlt =
     pickFeaturedImageAlt(post) || stripHtml(post.title.rendered);
+
+  const shareUrl = `${siteConfig.url}/blog/${post.slug}`;
 
   const related = category
     ? await getWpPosts({
@@ -94,8 +99,8 @@ export default async function BlogPostPage({
       {/* Featured Image */}
       {featuredImage ? (
         <Section size="sm" className="px-6 pb-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="aspect-21/9 rounded-2xl overflow-hidden shadow-2xl relative">
+          <div className="max-w-4xl mx-auto">
+            <div className="aspect-[16/9] rounded-2xl overflow-hidden shadow-xl relative">
               <Image
                 src={featuredImage}
                 alt={featuredAlt}
@@ -118,19 +123,10 @@ export default async function BlogPostPage({
 
           {/* Share Buttons */}
           <div className="mt-20 pt-10 border-t border-neutral-200 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <span className="text-xs font-bold uppercase tracking-widest text-neutral-400">
-                Share this insight
-              </span>
-              <div className="flex gap-2">
-                <button className="size-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-primary hover:text-white transition-all">
-                  <Icon name="share" size="sm" />
-                </button>
-                <button className="size-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-primary hover:text-white transition-all">
-                  <Icon name="link" size="sm" />
-                </button>
-              </div>
-            </div>
+            <ShareButtons
+              url={shareUrl}
+              title={stripHtml(post.title.rendered)}
+            />
             <div className="flex gap-2 flex-wrap">
               {tags.slice(0, 8).map((tag) => (
                 <span
