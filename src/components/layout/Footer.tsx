@@ -54,7 +54,7 @@ export function Footer({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12 mb-16">
           {/* Quick Links */}
-          <div>
+          <div className="border-t border-white/10 pt-8 first:border-t-0 first:pt-0 md:border-t-0 md:border-l md:pl-10 md:first:border-l-0">
             <h5 className="font-bold text-sm uppercase tracking-widest mb-8 text-accent-gold">
               Quick Links
             </h5>
@@ -73,7 +73,7 @@ export function Footer({
           </div>
 
           {/* Resources */}
-          <div>
+          <div className="border-t border-white/10 pt-8 first:border-t-0 first:pt-0 md:border-t-0 md:border-l md:pl-10 md:first:border-l-0">
             <h5 className="font-bold text-sm uppercase tracking-widest mb-8 text-accent-gold">
               Resources
             </h5>
@@ -92,7 +92,7 @@ export function Footer({
           </div>
 
           {/* Legal */}
-          <div>
+          <div className="border-t border-white/10 pt-8 first:border-t-0 first:pt-0 md:border-t-0 md:border-l md:pl-10 md:first:border-l-0">
             <h5 className="font-bold text-sm uppercase tracking-widest mb-8 text-accent-gold">
               Legal
             </h5>

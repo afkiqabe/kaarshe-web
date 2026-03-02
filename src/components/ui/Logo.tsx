@@ -28,12 +28,13 @@ export function Logo({
     (text ?? siteConfig.logo.text).trim() || siteConfig.logo.text;
   const logoImage = image ?? siteConfig.logo.image ?? null;
   const mobileText = resolvedText.toUpperCase();
-  const desktopText = resolvedText.startsWith("K")
-    ? resolvedText.slice(1)
-    : resolvedText;
-
+  // const desktopText = resolvedText.startsWith("K")
+  //   ? resolvedText.slice(1)
+  //   : resolvedText;
+  const desktopText = mobileText;
   return (
     <Link href="/" className={cn("flex items-center gap-3", className)}>
+      {/*
       {showIcon && (
         <span
           className={cn("hidden md:inline-flex items-center", iconClassName)}
@@ -56,6 +57,7 @@ export function Logo({
           )}
         </span>
       )}
+      */}
       <h2
         className={cn(
           "text-3xl md:text-2xl font-black tracking-tighter leading-none",

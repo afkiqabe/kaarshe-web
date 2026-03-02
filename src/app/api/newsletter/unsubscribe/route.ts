@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getWpAuthHeaders } from "@/lib/wp";
+import { sendEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -60,24 +61,70 @@ export async function POST(req: Request) {
       title?: { rendered?: string };
     }[];
 
-    if (!Array.isArray(subscribers) || subscribers.length === 0) {
-      // For privacy, still return ok=true even if nothing was removed.
-      return NextResponse.json({ ok: true, removed: 0 });
-    }
-
     let removed = 0;
 
-    for (const sub of subscribers) {
-      if (!sub?.id) continue;
+    if (Array.isArray(subscribers) && subscribers.length > 0) {
+      for (const sub of subscribers) {
+        if (!sub?.id) continue;
+        try {
+          const deleteUrl = `${collectionUrl}/${sub.id}?force=true`;
+          const delRes = await fetch(deleteUrl, {
+            method: "DELETE",
+            headers: { ...authHeaders },
+          });
+          if (delRes.ok) removed += 1;
+        } catch {
+          // ignore individual delete failures
+        }
+      }
+    }
+
+    // Send confirmation email to the user if we removed at least one record.
+    if (removed > 0) {
+      const siteUrl = (
+        process.env.NEXT_PUBLIC_SITE_URL || "https://kaarshe.com"
+      ).replace(/\/$/, "");
+      const subject = "You have been unsubscribed from KAARSHE";
+      const text =
+        "You have been unsubscribed from the KAARSHE newsletter." +
+        "\n\nYou will no longer receive email updates from us." +
+        `\n\nIf this was a mistake, you can subscribe again any time at ${siteUrl}.`;
+
+      const html = `<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>${subject}</title>
+  </head>
+  <body style="margin:0;padding:0;background-color:#0b0b0b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#e5e5e5;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#0b0b0b;padding:24px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#111217;border:1px solid #262626;border-radius:16px;padding:24px 24px 28px;">
+            <tr>
+              <td style="font-size:12px;letter-spacing:0.16em;color:#fbbf24;text-transform:uppercase;font-weight:700;padding-bottom:8px;">Kaarshe Web</td>
+            </tr>
+            <tr>
+              <td style="font-size:22px;line-height:1.3;font-weight:800;color:#f9fafb;padding-bottom:8px;">You have been unsubscribed</td>
+            </tr>
+            <tr>
+              <td style="font-size:14px;line-height:1.6;color:#d4d4d4;padding-bottom:16px;">We&apos;re sorry to see you go. Your email has been removed from the KAARSHE newsletter list and you will no longer receive these updates.</td>
+            </tr>
+            <tr>
+              <td style="font-size:12px;line-height:1.6;color:#9ca3af;border-top:1px solid #1f2937;padding-top:16px;">If this was a mistake, you can subscribe again any time by visiting <a href="${siteUrl}" style="color:#f97316;text-decoration:none;">${siteUrl}</a>.</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+
       try {
-        const deleteUrl = `${collectionUrl}/${sub.id}?force=true`;
-        const delRes = await fetch(deleteUrl, {
-          method: "DELETE",
-          headers: { ...authHeaders },
-        });
-        if (delRes.ok) removed += 1;
+        await sendEmail({ to: email, subject, text, html });
       } catch {
-        // ignore individual delete failures
+        // ignore email failures
       }
     }
 

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { Section } from "@/components/layout/Section";
-import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 
 export default function UnsubscribePage() {
@@ -10,10 +9,12 @@ export default function UnsubscribePage() {
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
+  const [linkEmail, setLinkEmail] = useState<string | null>(null);
+  const [isFromAutoLink, setIsFromAutoLink] = useState(false);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!email.trim() || status === "loading") return;
+  const unsubscribeByEmail = async (targetEmail: string) => {
+    if (!targetEmail.trim()) return;
+    if (status === "loading") return;
 
     setStatus("loading");
 
@@ -21,7 +22,7 @@ export default function UnsubscribePage() {
       const res = await fetch("/api/newsletter/unsubscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: targetEmail }),
       });
 
       if (!res.ok) {
@@ -36,55 +37,56 @@ export default function UnsubscribePage() {
     }
   };
 
+  // If the page is opened with ?email=...&auto=1, auto-unsubscribe that email.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const url = new URL(window.location.href);
+    const qpEmail = url.searchParams.get("email")?.trim() ?? "";
+    const auto = url.searchParams.get("auto");
+
+    if (qpEmail && !linkEmail) {
+      setEmail(qpEmail);
+      setLinkEmail(qpEmail);
+    }
+
+    if (qpEmail && auto === "1") {
+      setIsFromAutoLink(true);
+      if (status === "idle") {
+        void unsubscribeByEmail(qpEmail);
+      }
+    }
+  }, [linkEmail, status]);
+
+  const isAuto = isFromAutoLink && !!linkEmail;
+
   return (
-    <Section size="lg" background="white" className="min-h-[60vh] flex items-center">
+    <Section
+      size="lg"
+      background="white"
+      className="min-h-[60vh] flex items-center"
+    >
       <div className="max-w-xl mx-auto text-center space-y-6">
         <div className="inline-flex items-center gap-2 rounded-full bg-neutral-50 px-4 py-2 text-xs font-semibold text-neutral-500 mb-2">
           <Icon name="unsubscribe" size="sm" className="text-accent-burgundy" />
           <span>Manage newsletter settings</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-black text-primary">
-          Unsubscribe from the newsletter
+          {isAuto
+            ? status === "success"
+              ? "You have been unsubscribed"
+              : "Unsubscribing from the newsletter"
+            : "Manage newsletter subscription"}
         </h1>
         <p className="text-primary/60 text-base md:text-lg max-w-lg mx-auto">
-          Enter the email address you used to subscribe, and we&apos;ll remove it from future updates and announcements.
+          {isAuto
+            ? status === "success"
+              ? "You have been unsubscribed from the KAARSHE newsletter. We are sorry to see you go."
+              : status === "error"
+                ? "We couldn&apos;t process your unsubscribe request. Please try again later."
+                : "We are processing your unsubscribe request. You don&apos;t need to do anything else."
+            : "To unsubscribe, please use the unsubscribe link included in one of our newsletter emails."}
         </p>
-
-        <form
-          onSubmit={handleSubmit}
-          className="mt-6 flex flex-col sm:flex-row gap-3 max-w-lg mx-auto"
-        >
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email address"
-            className="flex-1 rounded-lg border border-neutral-300 px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent-burgundy"
-            required
-            disabled={status === "loading"}
-          />
-          <Button
-            type="submit"
-            size="md"
-            variant="primary"
-            isLoading={status === "loading"}
-            disabled={status === "loading"}
-            className="px-6"
-          >
-            Unsubscribe
-          </Button>
-        </form>
-
-        {status === "success" && (
-          <p className="mt-4 text-sm text-accent-gold">
-            You have been unsubscribed. It can take a short time for all emails to stop.
-          </p>
-        )}
-        {status === "error" && (
-          <p className="mt-4 text-sm text-accent-burgundy">
-            We couldn&apos;t process that request. Please check the email and try again.
-          </p>
-        )}
       </div>
     </Section>
   );

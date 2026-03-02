@@ -105,12 +105,126 @@ export async function POST(req: Request) {
     const notifyTo = process.env.SITE_OWNER_EMAIL;
     if (notifyTo) {
       const subject = "New newsletter subscriber";
-      const text = `A new email subscribed to your newsletter.\n\nEmail: ${email}\nSource: ${source || "unknown"}`;
+      // const text = `A new email subscribed to your newsletter.\n\nEmail: ${email}\nSource: ${source || "unknown"}`;
+      const text = `A new email subscribed to your newsletter.\n\nEmail: ${email}`;
+      const html = `<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>${subject}</title>
+  </head>
+  <body style="margin:0;padding:0;background-color:#0b0b0b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#e5e5e5;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#0b0b0b;padding:24px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#111217;border:1px solid #262626;border-radius:16px;padding:24px 24px 28px;">
+            <tr>
+              <td style="font-size:12px;letter-spacing:0.16em;color:#fbbf24;text-transform:uppercase;font-weight:700;padding-bottom:8px;">Kaarshe Web</td>
+            </tr>
+            <tr>
+              <td style="font-size:22px;line-height:1.3;font-weight:800;color:#f9fafb;padding-bottom:8px;">New newsletter subscriber</td>
+            </tr>
+            <tr>
+              <td style="font-size:14px;line-height:1.6;color:#d4d4d4;padding-bottom:16px;">A new email subscribed to your newsletter.</td>
+            </tr>
+            <tr>
+              <td>
+                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;font-size:14px;line-height:1.6;color:#e5e5e5;">
+                  <tr>
+                    <td style="padding:4px 0;width:120px;color:#9ca3af;">Email</td>
+                    <td style="padding:4px 0;font-weight:600;">${email}</td>
+                  </tr>
+                  
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+
+      // <tr>
+      //                     <td style="padding:4px 0;width:120px;color:#9ca3af;">Source</td>
+      //                     <td style="padding:4px 0;">${source || "unknown"}</td>
+      //                   </tr>
       try {
-        await sendEmail({ to: notifyTo, subject, text });
+        await sendEmail({ to: notifyTo, subject, text, html });
       } catch {
         // Ignore email transport failures so subscription still succeeds.
       }
+    }
+
+    // Send welcome email to the subscriber themselves
+    const siteUrl = (
+      process.env.NEXT_PUBLIC_SITE_URL || "https://kaarshe.com"
+    ).replace(/\/$/, "");
+    const unsubscribeUrl = `${siteUrl}/unsubscribe?email=${encodeURIComponent(
+      email,
+    )}&auto=1`;
+
+    const welcomeSubject = "Welcome to the KAARSHE newsletter";
+    const welcomeText =
+      `Welcome to the KAARSHE newsletter!` +
+      `\n\nYou're now subscribed with: ${email}` +
+      `\n\nIf you ever want to unsubscribe, just visit:` +
+      `\n${unsubscribeUrl}`;
+
+    const welcomeHtml = `<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>${welcomeSubject}</title>
+  </head>
+  <body style="margin:0;padding:0;background-color:#0b0b0b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#e5e5e5;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#0b0b0b;padding:24px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#111217;border:1px solid #262626;border-radius:16px;padding:24px 24px 28px;">
+            <tr>
+              <td style="font-size:12px;letter-spacing:0.16em;color:#fbbf24;text-transform:uppercase;font-weight:700;padding-bottom:8px;">Kaarshe Web</td>
+            </tr>
+            <tr>
+              <td style="font-size:22px;line-height:1.3;font-weight:800;color:#f9fafb;padding-bottom:8px;">Welcome to the newsletter</td>
+            </tr>
+            <tr>
+              <td style="font-size:14px;line-height:1.6;color:#d4d4d4;padding-bottom:16px;">Thank you for subscribing to the <strong>KAARSHE</strong> newsletter. You&apos;ll receive updates on new research, publications, and insights.</td>
+            </tr>
+            <tr>
+              <td>
+                <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;font-size:14px;line-height:1.6;color:#e5e5e5;">
+                  <tr>
+                    <td style="padding:4px 0;width:120px;color:#9ca3af;">You Email</td>
+                    <td style="padding:4px 0;font-weight:600;">${email}</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-top:20px;font-size:12px;line-height:1.6;color:#9ca3af;border-top:1px solid #1f2937;margin-top:16px;">
+                If you no longer wish to receive these emails, you can
+                <a href="${unsubscribeUrl}" style="color:#f97316;text-decoration:none;">unsubscribe here</a>.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+
+    try {
+      await sendEmail({
+        to: email,
+        subject: welcomeSubject,
+        text: welcomeText,
+        html: welcomeHtml,
+      });
+    } catch {
+      // Ignore welcome email failures so subscription still succeeds.
     }
 
     return NextResponse.json({ ok: true });
